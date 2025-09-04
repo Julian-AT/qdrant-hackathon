@@ -18,14 +18,13 @@ const training = await replicate.trainings.create(
     "qwen-image-lora-base",
     "7587d9a3db89eb00f3fb09a915cefbd059dff4e7bf6aeb8aa136d14686051e39",
     {
-        // You need to create a model on Replicate that will be the destination for the trained version.
-        destination: "julian-at/model-name",
+        destination: "julian-at/interior-panorama",
         input: {
             steps: 1000,
             dataset: "https://",
             lora_rank: 64,
             learning_rate: 0.0002,
-            default_caption: "A photo of a person named <>"
+            default_caption: "A photo of an interior panorama <>"
         }
     }
 );
