@@ -1,29 +1,37 @@
 [project]
-name = "qdrant"
-version = "0.1.0"
-description = ""
+name = "vector-search-engine"
+version = "1.0.0"
+description = "A modular vector search engine for IKEA products using Qdrant, CLIP, and OpenAI embeddings"
 authors = [
-    {name = "Julian S.",email = "julian.schmidt1005@gmail.com"}
+    {name = "Julian S.", email = "julian.schmidt1005@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
 dependencies = [
-    "ikea-api[all] (>=2.4.0,<3.0.0)",
-    "beautifulsoup4 (>=4.12.0,<5.0.0)",
-    "requests (>=2.31.0,<3.0.0)",
-    "selenium (>=4.15.0,<5.0.0)",
-    "webdriver-manager (>=4.0.2,<5.0.0)",
-    "tqdm (>=4.64.0,<5.0.0)",
-    "qdrant-client (>=1.12.0,<2.0.0)",
-    "sentence-transformers (>=3.2.0,<4.0.0)",
-    "numpy (>=1.24.0,<2.0.0)",
-    "aiohttp (>=3.12.15,<4.0.0)",
-    "openai (>=1.0.0,<2.0.0)",
-    "python-dotenv (>=1.0.0,<2.0.0)"
+    "qdrant-client>=1.12.0,<2.0.0",
+    "torch>=2.0.0",
+    "transformers>=4.30.0",
+    "pillow>=9.0.0",
+    "requests>=2.31.0,<3.0.0",
+    "openai>=1.0.0,<2.0.0",
+    "python-dotenv>=1.0.0,<2.0.0",
+    "tqdm>=4.65.0,<5.0.0",
+    "numpy>=1.24.0,<2.0.0"
+]
+
+[project.optional-dependencies]
+scraping = [
+    "ikea-api[all]>=2.4.0,<3.0.0",
+    "beautifulsoup4>=4.12.0,<5.0.0",
+    "selenium>=4.15.0,<5.0.0",
+    "webdriver-manager>=4.0.2,<5.0.0"
 ]
 
 [tool.poetry]
-packages = [{include = "qdrant", from = "src"}]
+packages = [{include = "vector_search", from = "src"}]
+
+[tool.poetry.scripts]
+vector-search = "vector_search.cli.main:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
