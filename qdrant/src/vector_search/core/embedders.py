@@ -20,7 +20,7 @@ class BaseEmbedder(ABC):
 
 
 class CLIPEmbedder(BaseEmbedder):
-    def __init__(self, model_name: str = "openai/clip-vit-base-patch32"):
+    def __init__(self, model_name: str = "openai/clip-vit-large-patch14"):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info(f"Using device: {self.device}")
         

@@ -8,7 +8,6 @@ load_dotenv()
 
 
 class Config:
-    
     # Qdrant settings
     QDRANT_URL: str = os.getenv("QDRANT_URL", "http://localhost:6333")
     QDRANT_API_KEY: Optional[str] = os.getenv("QDRANT_API_KEY")
@@ -18,7 +17,7 @@ class Config:
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "text-embedding-3-small")
     
     # CLIP settings
-    CLIP_MODEL: str = os.getenv("CLIP_MODEL", "openai/clip-vit-base-patch32")
+    CLIP_MODEL: str = os.getenv("CLIP_MODEL", "openai/clip-vit-large-patch14")
     
     # Collection names
     TEXT_COLLECTION: str = os.getenv("TEXT_COLLECTION", "ikea_products")
@@ -27,7 +26,7 @@ class Config:
     # Processing settings
     BATCH_SIZE: int = int(os.getenv("BATCH_SIZE", "32"))
     VECTOR_SIZE_TEXT: int = int(os.getenv("VECTOR_SIZE_TEXT", "1536"))
-    VECTOR_SIZE_IMAGE: int = int(os.getenv("VECTOR_SIZE_IMAGE", "512"))
+    VECTOR_SIZE_IMAGE: int = int(os.getenv("VECTOR_SIZE_IMAGE", "768"))
     
     # Search settings
     DEFAULT_LIMIT: int = int(os.getenv("DEFAULT_LIMIT", "10"))
