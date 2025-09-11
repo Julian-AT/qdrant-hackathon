@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { ReactNode, useCallback, useMemo } from "react";
 import useSWR from "swr";
 
 export interface SceneData {
@@ -12,6 +12,7 @@ export interface SceneData {
     progress: number;
     statusMessage: string | null;
     error: string | null;
+    ui: ReactNode | null;
 }
 
 export const initialSceneData: SceneData = {
@@ -23,7 +24,9 @@ export const initialSceneData: SceneData = {
     progress: 0,
     statusMessage: null,
     error: null,
+    ui: null,
 };
+
 
 export function useScene() {
     const { data: localSceneData, mutate: setLocalSceneData, error } = useSWR(
@@ -33,6 +36,7 @@ export function useScene() {
             fallbackData: initialSceneData,
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
+            initialData: initialSceneData,
         },
     );
 
@@ -53,12 +57,15 @@ export function useScene() {
         });
     }, [setLocalSceneData]);
 
-    const updateProgress = useCallback((progress: number, statusMessage: string) => {
+    const updateProgress = useCallback((progress: number, statusMessage: string, ui?: ReactNode) => {
+        console.log("updateProgress", progress, statusMessage, ui);
+
         setScene((currentScene) => ({
             ...currentScene,
             progress,
             statusMessage,
             error: null,
+            ui,
         }));
     }, [setScene]);
 
