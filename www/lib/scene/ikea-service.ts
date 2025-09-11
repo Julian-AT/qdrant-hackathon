@@ -5,35 +5,23 @@ import { z } from "zod";
 import { myProvider } from "@/lib/ai/providers";
 import type { FurnitureAnalysis, IkeaProduct } from "./types";
 import { IkeaIntegrationError } from "./types";
+import { SegmentationResult } from "./image-service";
+import { generateUUID } from "../utils";
+import Replicate from "replicate";
+import sharp from "sharp"
+import fs from "node:fs"
+
+interface Segment {
+  id: string;
+  bbox: number[];
+  label: string;
+  imageSegment: string;
+}
 
 export class IkeaService {
   private qdrant: QdrantClient;
-  private readonly collectionName = "ikea_products";
-
-  private normalizeFurnitureTerms(items: string[]): string[] {
-    const synonymMap: Record<string, string> = {
-      "television unit": "tv bench",
-      "tv unit": "tv bench",
-      "tv stand": "tv bench",
-      "tv table": "tv bench",
-      couch: "sofa",
-      sofas: "sofa",
-      tables: "table",
-      chairs: "chair",
-      "arm chair": "armchair",
-      "end table": "side table",
-      "coffee table": "coffee table",
-      ottomans: "ottoman",
-    };
-
-    const normalized = new Set<string>();
-    for (const raw of items) {
-      const term = raw.toLowerCase().trim();
-      const mapped = synonymMap[term] ?? term;
-      normalized.add(mapped);
-    }
-    return Array.from(normalized);
-  }
+  private replicate: Replicate;
+  private readonly collectionName = "furniture_images";
 
   constructor() {
     if (!process.env.QDRANT_URL || !process.env.QDRANT_API_KEY) {
@@ -42,243 +30,140 @@ export class IkeaService {
       );
     }
 
+    if (!process.env.REPLICATE_API_TOKEN) {
+      throw new Error("REPLICATE_API_TOKEN is required");
+    }
+
+
+    this.replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
     this.qdrant = new QdrantClient({
       url: process.env.QDRANT_URL,
       apiKey: process.env.QDRANT_API_KEY,
     });
   }
 
-  async analyzeFurniture(imageData: string): Promise<FurnitureAnalysis> {
+  async getSegment(bbox: number[], baseImage: string): Promise<string> {
+    const imageBuffer = Buffer.from(baseImage.split(',')[1], 'base64');
+
+    const [x_min, y_min, x_max, y_max] = bbox;
+
+    const width = x_max - x_min;
+    const height = y_max - y_min;
+
+    const segmentBuffer = await sharp(imageBuffer)
+      .extract({
+        left: Math.round(x_min),
+        top: Math.round(y_min),
+        width: Math.round(width),
+        height: Math.round(height)
+      })
+      .jpeg({ quality: 90 })
+      .toBuffer();
+
+    return `data:image/jpeg;base64,${segmentBuffer.toString('base64')}`;
+  }
+
+
+  async getSegments(segmentationResult: SegmentationResult, baseImage: string): Promise<Segment[]> {
+    const segments = [];
+
+    for (let i = 0; i < segmentationResult['<OD>'].bboxes.length; i++) {
+      const bbox = segmentationResult['<OD>'].bboxes[i];
+      const label = segmentationResult['<OD>'].labels[i];
+
+      const imageSegment = await this.getSegment(bbox, baseImage);
+      const segmentId = generateUUID();
+
+      segments.push({
+        id: segmentId,
+        bbox,
+        label,
+        imageSegment,
+      });
+    }
+
+    return segments;
+  }
+
+  async filterSegmentsLLM(segments: Segment[], baseImage: string): Promise<Segment[]> {
+    const possibleIds = segments.map(segment => segment.id) as string[] as [string, ...string[]];
+
+    const { object } = await generateObject({
+      model: myProvider.languageModel("chat-model"),
+      schema: z.object({
+        ids: z.array(z.enum(possibleIds).describe("The ids of the segments that are filtered to be included in the final image.")),
+      }),
+      system: `You are a helpful assistant that filters segments to only include the ones that are furniture.
+      Narrow those segments down to only include labels that are available as Ikea products. e.g. "bed", "chair", "table", "sofa" etc. Do not include labels like "wall", "floor", "ceiling", "window", "door", "lamp", etc..`,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Here are the segments: \n\n${segments.map(segment => `ID: ${segment.id}, Label: ${segment.label}`).join("\n")}`,
+            },
+            {
+              type: "image",
+              image: baseImage
+            }
+          ]
+        },
+
+      ],
+    });
+
+    if (!object.ids) {
+      throw new IkeaIntegrationError(
+        "Failed to filter segments",
+        new Error("No segments returned")
+      );
+    }
+
+    const filteredSegments = segments.filter(segment => object.ids.includes(segment.id));
+    return filteredSegments;
+  }
+
+
+  async searchIkeaProducts(segments: Segment[]): Promise<IkeaProduct[]> {
     try {
-      const { object: analysis } = await generateObject({
-        model: myProvider.languageModel("chat-model"),
-        schema: z.object({
-          items: z
-            .array(z.string())
-            .describe("Furniture items visible in the image."),
-          confidence: z
-            .number()
-            .min(0)
-            .max(1)
-            .describe("Confidence level of the analysis."),
-          roomType: z.string().optional().describe("Type of room detected."),
-        }),
-        system: `Analyze the image and identify furniture items. Return a plain JSON object instance — not a JSON Schema. Do not include keys like "type" or "properties". The object must contain only: items (string array), confidence (number 0-1), and optionally roomType (string).
+      const ikeaProductsPromises = segments.map(async (segment) => {
+        const imageData = Buffer.from(segment.imageSegment.split(',')[1], "base64");
 
-Instructions:
-- Identify 2-5 main furniture pieces
-- Use standard furniture terms (sofa, table, chair, bed, desk, bookshelf, etc.)
-- Focus on items that could realistically be replaced with IKEA products
-- Provide a confidence score based on image clarity and furniture visibility
-- Determine the room type to help with context
-
-Be specific but avoid overly detailed descriptions.`,
-        messages: [
+        const output = await this.replicate.run(
+          "krthr/clip-embeddings:1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4",
           {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Analyze this room image and identify the main furniture items.",
-              },
-              {
-                type: "image",
-                image: imageData,
-              },
-            ],
-          },
-        ],
-      });
-
-      if (!analysis.items || analysis.items.length === 0) {
-        return { items: [], confidence: 0 };
-      }
-
-      return {
-        items: analysis.items,
-        confidence: analysis.confidence || 0.8,
-      };
-    } catch (error) {
-      // Attempt to recover if the model mistakenly returned a JSON Schema-like object
-      try {
-        // Extract raw text from common error shapes produced by the AI SDK
-        const rawText =
-          (error as any)?.text ||
-          (error as any)?.cause?.text ||
-          (error as any)?.response?.text ||
-          (error as any)?.cause?.response?.text ||
-          undefined;
-
-        if (typeof rawText === "string" && rawText.trim().length > 0) {
-          let parsed: any | undefined;
-
-          // Try to parse the raw text directly; if it fails, attempt to extract the first JSON object substring
-          try {
-            parsed = JSON.parse(rawText);
-          } catch {
-            const match = rawText.match(/\{[\s\S]*\}/);
-            if (match) {
-              try {
-                parsed = JSON.parse(match[0]);
-              } catch {
-                // ignore; will fall through to rethrow
-              }
+            input: {
+              image: imageData,
+              text: segment.label
             }
           }
+        ) as any;
 
-          if (parsed && typeof parsed === "object") {
-            // If the model produced a JSON Schema-like object, extract its properties
-            const candidate =
-              parsed.properties && typeof parsed.properties === "object"
-                ? parsed.properties
-                : parsed;
 
-            const recoverySchema = z.object({
-              items: z.array(z.string()),
-              confidence: z.number().min(0).max(1).optional(),
-              roomType: z.string().optional(),
-            });
 
-            const result = recoverySchema.safeParse(candidate);
-            if (result.success) {
-              const items = result.data.items ?? [];
-              const confidence = result.data.confidence ?? 0.8;
-              return { items, confidence } satisfies FurnitureAnalysis;
-            }
-          }
-        }
-      } catch {
-        // If recovery fails, fall through to throw the integration error below
-      }
-
-      throw new IkeaIntegrationError(
-        "Failed to analyze furniture in image",
-        error as Error
-      );
-    }
-  }
-
-  async searchProducts(furnitureItems: string[]): Promise<IkeaProduct[]> {
-    if (furnitureItems.length === 0) {
-      return [];
-    }
-
-    try {
-      const terms = this.normalizeFurnitureTerms(furnitureItems);
-
-      const { embeddings } = await embedMany({
-        model: openai.textEmbeddingModel("text-embedding-3-small"),
-        values: terms,
-      });
-
-      const initialThreshold = 0.45;
-      const relaxedThreshold = 0.3;
-      const perQueryLimit = 5;
-
-      const searchParams = (threshold: number) => ({
-        searches: embeddings.map((embedding) => ({
+        const embedding = JSON.parse(output) as unknown as number[];
+        const ikeaProduct = await this.qdrant.search(this.collectionName, {
           vector: embedding,
-          limit: perQueryLimit,
-          score_threshold: threshold,
-          with_payload: true,
-        })),
+          limit: 1,
+        });
+
+        console.log(ikeaProduct);
+
+        return ikeaProduct[0];
       });
 
-      let searchResults = await this.qdrant.searchBatch(
-        this.collectionName,
-        searchParams(initialThreshold)
-      );
-
-      const productMap = new Map<string, IkeaProduct>();
-
-      const considerResult = (result: any, minScore: number) => {
-        if (!result?.payload) return;
-        const score: number =
-          typeof result.score === "number" ? result.score : 0;
-
-        const payload = result.payload as any;
-        const productId = payload.product_id;
-        if (!productId) return;
-
-        const payloadText: string = String(payload.text || "").toLowerCase();
-        const keywordHit = terms.some((t) => payloadText.includes(t));
-
-        if (score >= minScore || keywordHit) {
-          if (!productMap.has(productId)) {
-            productMap.set(productId, {
-              id: productId,
-              name: payload.product_name || "Unknown Product",
-              description: payload.description || "",
-              price: payload.price || 0,
-              currency: payload.currency || "USD",
-              imageUrl: payload.main_image_url || "",
-              category: payload.category_name || "furniture",
-            });
-          }
-        }
-      };
-
-      for (const batch of searchResults) {
-        for (const result of batch as any[]) {
-          considerResult(result, initialThreshold);
-        }
-      }
-
-      // If nothing found, relax threshold and retry
-      if (productMap.size === 0) {
-        searchResults = await this.qdrant.searchBatch(
-          this.collectionName,
-          searchParams(relaxedThreshold)
-        );
-        for (const batch of searchResults) {
-          for (const result of batch as any[]) {
-            considerResult(result, relaxedThreshold);
-          }
-        }
-      }
-
-      // Debug logging for observability
-      if (productMap.size === 0) {
-        console.log("IKEA search: no matches for terms", terms);
-      } else {
-        console.log(
-          "IKEA search: matched products",
-          Array.from(productMap.values())
-            .slice(0, 5)
-            .map((p) => ({ id: p.id, name: p.name, category: p.category }))
-        );
-      }
-
-      return Array.from(productMap.values()).slice(0, 5);
+      const ikeaProducts = await Promise.all(ikeaProductsPromises);
+      return ikeaProducts as unknown as IkeaProduct[];
     } catch (error) {
+      console.log(error);
       throw new IkeaIntegrationError(
-        "Failed to search IKEA products",
+        "Failed to search Ikea products",
         error as Error
       );
     }
   }
 
-  generateEnhancementPrompt(
-    furnitureItems: string[],
-    ikeaProducts: IkeaProduct[]
-  ): string {
-    if (furnitureItems.length === 0 || ikeaProducts.length === 0) {
-      return "";
-    }
-
-    const furnitureDescriptions = ikeaProducts
-      .map(
-        (product) =>
-          `${product.name} (${product.category}): ${product.description}`
-      )
-      .join(", ");
-
-    return `Replace the furniture in this room with these exact IKEA products by name: ${furnitureDescriptions}.
-    Maintain the exact same room layout, camera position, perspective, and lighting.
-    Keep all architectural elements unchanged (walls, floors, ceiling, windows).
-    Only update the furniture to match the specified IKEA products' style, proportions, and materials.
-    Ensure realistic scale, placement, and shadows so the result looks like a professional interior design photo featuring IKEA furniture.`;
-  }
 
   isAvailable(): boolean {
     return !!(process.env.QDRANT_URL && process.env.QDRANT_API_KEY);

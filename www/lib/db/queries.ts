@@ -10,7 +10,9 @@ import {
     gte,
     inArray,
     lt,
+    max,
     type SQL,
+    sql,
 } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
@@ -287,6 +289,51 @@ export async function getMessageById({ id }: { id: string }) {
     }
 }
 
+export async function getPublicScenes({ page, limit }: { page: number, limit: number }) {
+    try {
+        const scenes = await db
+            .select({
+                id: scene.id,
+                title: scene.title,
+                visibility: scene.visibility,
+                createdAt: scene.createdAt,
+                userId: scene.userId,
+            })
+            .from(scene)
+            .where(eq(scene.visibility, 'private'))
+            .orderBy(desc(scene.createdAt))
+            .offset(page * limit)
+            .limit(limit);
+
+        const scenesWithMessages = await Promise.all(
+            scenes.map(async (sceneData) => {
+                const [latestMessage] = await db
+                    .select({
+                        parts: message.parts
+                    })
+                    .from(message)
+                    .where(eq(message.sceneId, sceneData.id))
+                    .orderBy(desc(message.createdAt))
+                    .limit(1);
+
+                return {
+                    ...sceneData,
+                    latestMessagePart: latestMessage?.parts || null
+                };
+            })
+        );
+
+        return scenesWithMessages;
+    } catch (error) {
+        console.log(error);
+
+        throw new ChatSDKError(
+            'bad_request:database',
+            'Failed to get public scenes',
+        );
+    }
+}
+
 export async function deleteMessagesBySceneIdAfterTimestamp({
     sceneId,
     timestamp,
@@ -406,6 +453,26 @@ export async function getStreamIdsBySceneId({ sceneId }: { sceneId: string }) {
         throw new ChatSDKError(
             'bad_request:database',
             'Failed to get stream ids by scene id',
+        );
+    }
+}
+
+export async function getAllScenes() {
+    try {
+        return await db
+            .select({
+                id: scene.id,
+                title: scene.title,
+                visibility: scene.visibility,
+                createdAt: scene.createdAt,
+                userId: scene.userId,
+            })
+            .from(scene)
+            .orderBy(desc(scene.createdAt));
+    } catch (error) {
+        throw new ChatSDKError(
+            'bad_request:database',
+            'Failed to get all scenes',
         );
     }
 }

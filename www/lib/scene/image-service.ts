@@ -2,11 +2,18 @@ import Replicate from "replicate";
 import { generateText, convertToModelMessages } from "ai";
 import { myProvider } from "@/lib/ai/providers";
 import type { ChatMessage } from "@/lib/types";
-import type { ImageGenerationOptions } from "./types";
+import type { IkeaProduct, ImageGenerationOptions } from "./types";
 import { ImageGenerationError } from "./types";
 
 interface ReplicateResult {
   url: () => string;
+}
+
+export interface SegmentationResult {
+  '<OD>': {
+    bboxes: number[][];
+    labels: string[];
+  };
 }
 
 export class ImageService {
@@ -54,7 +61,10 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
   async generatePanorama(
     description: string,
     options: Partial<ImageGenerationOptions> = {}
-  ): Promise<string> {
+  ): Promise<{
+    imageUrl: string;
+    imageData: string;
+  }> {
     try {
       const result: ReplicateResult[] = (await this.replicate.run(
         "govirtualuk/pegasus:c566ed7924f1b66556e64aa91bcff6ffc57fe9e92c94172bde04bf43cff33bd1",
@@ -83,7 +93,10 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
       const image = await fetch(imageUrl);
       const imageBuffer = await image.arrayBuffer();
       const base64 = Buffer.from(imageBuffer).toString("base64");
-      return `data:image/jpeg;base64,${base64}`;
+      return {
+        imageUrl,
+        imageData: `data:image/jpeg;base64,${base64}`,
+      };
     } catch (error) {
       throw new ImageGenerationError(
         "Failed to generate panoramic image",
@@ -92,16 +105,74 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
     }
   }
 
-  async enhanceWithFurniture(
+  async segmentImage(
+    imageUrl: string,
+  ): Promise<SegmentationResult> {
+    try {
+      const result = await this.replicate.run(
+        "lucataco/florence-2-large:da53547e17d45b9cfb48174b2f18af8b83ca020fa76db62136bf9c6616762595",
+        {
+          input: {
+            image: imageUrl,
+            task_input: "Object Detection"
+          }
+        }
+      ) as any;
+
+      console.log(result);
+
+      if (!result.text) {
+        throw new Error("No result text")
+      }
+
+      const resultJSON = result.text.replace(/'/g, '"')
+      const segmentationResult = JSON.parse(resultJSON) as SegmentationResult;
+      return segmentationResult;
+    } catch (error) {
+      console.log(error);
+      throw new ImageGenerationError(
+        "Failed to segment image",
+        error as Error
+      );
+    }
+  }
+
+  async injectIkeaProducts(baseImage: string, ikeaProducts: IkeaProduct[]): Promise<string> {
+    try {
+      const imageData = await this.ensureBase64Image(baseImage);
+      const imageDataBuffer = Buffer.from(imageData.split(',')[1], "base64");
+
+      const result = await this.replicate.run("google/nano-banana", {
+        input: {
+          prompt: "Inject the ikea products into the fully furnished panorama image. Make the scene natural. ",
+          image_input: [imageDataBuffer, ...ikeaProducts.map(product => product.imageUrl)],
+          output_format: "jpg"
+        }
+      }) as unknown as ReplicateResult[];
+
+      const imageUrl = result[0].url();
+      const image = await fetch(imageUrl);
+      const imageBuffer = await image.arrayBuffer();
+      const base64 = Buffer.from(imageBuffer).toString("base64");
+      return `data:image/jpeg;base64,${base64}`;
+    } catch (error) {
+      console.log(error);
+      throw new ImageGenerationError(
+        "Failed to inject IKEA products into image",
+        error as Error
+      );
+    }
+  }
+
+
+  async upscaleImage(
     baseImage: string,
-    enhancementPrompt: string,
-    strength = 0.7
   ): Promise<string> {
     try {
       const imageData = await this.ensureBase64Image(baseImage);
-      const imageDataBuffer = Buffer.from(imageData, "base64");
+      const imageDataBuffer = Buffer.from(imageData.split(',')[1], "base64");
 
-      const result: ReplicateResult[] = (await this.replicate.run(
+      const result: ReplicateResult[] = await this.replicate.run(
         "philz1337x/clarity-upscaler:dfad41707589d68ecdccd1dfa600d55a208f9310748e44bfe35b4a6291453d5e",
         {
           input: {
@@ -130,7 +201,7 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
             downscaling_resolution: 768,
           },
         }
-      )) as unknown as ReplicateResult[];
+      ) as unknown as ReplicateResult[];
 
       const imageUrl = result[0].url();
       const image = await fetch(imageUrl);
@@ -138,6 +209,8 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
       const base64 = Buffer.from(imageBuffer).toString("base64");
       return `data:image/jpeg;base64,${base64}`;
     } catch (error) {
+      console.log(error);
+      console.log(error);
       throw new ImageGenerationError(
         "Failed to enhance image with furniture",
         error as Error
