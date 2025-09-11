@@ -23,6 +23,7 @@ import {
     SceneGenerationError,
     type SceneGenerationConfig
 } from '@/lib/scene';
+import { ReactNode } from 'react';
 
 export const maxDuration = 60;
 
@@ -102,8 +103,8 @@ export async function POST(request: Request) {
     const config: SceneGenerationConfig = SceneGenerator.validateConfig({
         includeIkeaFurniture: true,
         maxRetries: 3,
-        imageWidth: 1024,
-        imageHeight: 512,
+        imageWidth: 1440,
+        imageHeight: 720,
         guidanceScale: 7.5,
         inferenceSteps: 20,
     });
@@ -116,10 +117,10 @@ export async function POST(request: Request) {
                 const messagesFromDb = await getMessagesBySceneId({ id });
                 const allMessages = [...convertToUIMessages(messagesFromDb), message];
 
-                const onProgress = (progress: number, message: string) => {
+                const onProgress = (progress: number, message: string, ui?: ReactNode) => {
                     dataStream.write({
                         type: "data-sceneProgress",
-                        data: { progress, message },
+                        data: { progress, message, ui },
                         transient: true,
                     });
                 };
