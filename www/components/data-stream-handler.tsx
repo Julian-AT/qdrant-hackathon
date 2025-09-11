@@ -22,8 +22,10 @@ export function DataStreamHandler() {
             try {
                 switch (delta.type) {
                     case "data-sceneProgress":
-                        const { progress, message } = delta.data;
-                        updateProgress(progress, message);
+                        const { progress, message, ui } = delta.data;
+                        console.log("delta ui", ui);
+
+                        updateProgress(progress, message, ui);
                         break;
 
                     case "data-sceneResult":

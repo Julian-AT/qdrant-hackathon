@@ -8,7 +8,7 @@ import { useScene } from "@/hooks/use-scene";
 import { Conversation, ConversationContent } from "./conversation";
 import { useMessages } from "@/hooks/use-messages";
 import { UseChatHelpers } from "@ai-sdk/react";
-import { ChatMessage } from "@/lib/types";
+import { ChatMessage, SceneResult } from "@/lib/types";
 import { Vote } from "@/lib/db/schema";
 import { base64ToBlobUrl, cn, isValidBase64Image } from "@/lib/utils";
 import { GenerationProgress } from "./generation-progress";
@@ -52,39 +52,22 @@ const Scene = ({
   const { scene } = useScene();
   const pathname = usePathname();
 
-  // Convert base64 image to blob URL for Pannellum
+  const allMessageParts = messages.flatMap((message) => message.parts);
+  const sceneResults: SceneResult[] = allMessageParts
+    .filter((part) => part.type === "data-sceneResult")
+    .map((part) => part.data as SceneResult)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+
   const imageUrl = useMemo(() => {
-    // Add additional safety checks
-    if (!scene?.image) {
+    if (!sceneResults || sceneResults.length === 0) {
       console.log("No scene image available");
       return null;
     }
 
-    console.log("Processing scene image:", {
-      type: typeof scene.image,
-      length: typeof scene.image === "string" ? scene.image.length : "N/A",
-      startsWithData:
-        typeof scene.image === "string"
-          ? scene.image.startsWith("data:image")
-          : false,
-      preview:
-        typeof scene.image === "string" ? scene.image.substring(0, 100) : "N/A",
-    });
-
-    if (!isValidBase64Image(scene.image)) {
-      console.log("Invalid base64 image data:", {
-        type: typeof scene.image,
-        length: typeof scene.image === "string" ? scene.image.length : "N/A",
-        preview:
-          typeof scene.image === "string"
-            ? scene.image.substring(0, 100)
-            : "N/A",
-      });
-      return null;
-    }
-
     try {
-      const blobUrl = base64ToBlobUrl(scene.image);
+      const latestSceneImage = sceneResults[0];
+      const blobUrl = base64ToBlobUrl(latestSceneImage.image);
       console.log(
         "Successfully converted image to blob URL:",
         blobUrl.substring(0, 50) + "..."
@@ -94,18 +77,17 @@ const Scene = ({
       console.error("Error converting image:", error);
       return null;
     }
-  }, [scene?.image]);
+  }, [messages]);
 
-  // Cleanup blob URL when component unmounts or image changes
-  useEffect(() => {
-    return () => {
-      if (imageUrl && imageUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(imageUrl);
-      }
-    };
-  }, [imageUrl]);
+  // useEffect(() => {
+  //   return () => {
+  //     if (imageUrl && imageUrl.startsWith("blob:")) {
+  //       console.log("revoking image url", imageUrl);
+  //       URL.revokeObjectURL(imageUrl);
+  //     }
+  //   };
+  // }, [imageUrl]);
 
-  // Pannellum event handlers
   const handlePanoramaLoad = useCallback(() => {
     console.log("panorama loaded");
   }, []);
@@ -122,9 +104,11 @@ const Scene = ({
     console.log(args.name);
   }, []);
 
-  if (typeof window === "undefined" || !pathname.startsWith("/scene/"))
+  if (typeof window === "undefined" || !pathname.startsWith("/scene/")) {
+    console.log("window is undefined or pathname does not start with /scene/");
     return null;
-  if (!scene || scene.id === "init") return null;
+  }
+  if (!scene || scene.id === "init" && !imageUrl) return null;
 
   console.log("Scene state:", {
     id: scene.id,
@@ -135,22 +119,25 @@ const Scene = ({
     statusMessage: scene.statusMessage,
   });
 
-  if (scene.isLoading || scene.error) {
+  console.log("scene.ui", scene.ui);
+
+
+  if ((scene.isLoading || scene.error) && !imageUrl) {
     return (
       <div className="w-full h-full">
         <GenerationProgress
           progress={scene.progress}
           statusMessage={scene.statusMessage}
           error={scene.error}
+          ui={scene.ui}
         />
       </div>
     );
   }
 
-  // No image available state (only after generation is complete)
   if (!imageUrl && !scene.isLoading) {
     return (
-      <div className="flex items-center justify-center h-full z-10 -mt-8 border border-red-500">
+      <div className="flex items-center justify-center h-full z-10">
         <div className="text-center max-w-md">
           <div className="flex items-center justify-center">
             <AlertCircleIcon className="size-8 " />
@@ -185,6 +172,7 @@ const Scene = ({
       ref={messagesContainerRef}
       className="overflow-hidden absolute w-screen h-screen"
     >
+      test
       <Conversation className="flex flex-col w-full h-full relative">
         <ConversationContent className="flex flex-col w-full h-full p-0">
           <Pannellum

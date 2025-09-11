@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { usePathname } from "next/navigation";
 import React, { useRef, useState } from "react";
 
 interface NavItem {
@@ -18,8 +19,8 @@ const navs: NavItem[] = [
     href: "/community",
   },
   {
-    name: "Contact",
-    href: "#contact",
+    name: "GitHub",
+    href: "https://github.com/julian-at/qdrant-hackathon",
   },
 ];
 
@@ -28,48 +29,8 @@ export function NavMenu() {
   const [left, setLeft] = useState(0);
   const [width, setWidth] = useState(0);
   const [isReady, setIsReady] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
   const [isManualScroll, setIsManualScroll] = useState(false);
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      // Skip scroll handling during manual click scrolling
-      if (isManualScroll) return;
-
-      const sections = navs.map((item) => item.href.substring(1));
-
-      // Find the section closest to viewport top
-      let closestSection = sections[0];
-      let minDistance = Infinity;
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          const distance = Math.abs(rect.top - 100); // Offset by 100px to trigger earlier
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestSection = section;
-          }
-        }
-      }
-
-      // Update active section and nav indicator
-      setActiveSection(closestSection);
-      const navItem = ref.current?.querySelector(
-        `[href="#${closestSection}"]`,
-      )?.parentElement;
-      if (navItem) {
-        const rect = navItem.getBoundingClientRect();
-        setLeft(navItem.offsetLeft);
-        setWidth(rect.width);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isManualScroll]);
+  const pathname = usePathname();
 
   const handleClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -83,15 +44,6 @@ export function NavMenu() {
     if (element) {
       // Set manual scroll flag
       setIsManualScroll(true);
-
-      // Immediately update nav state
-      setActiveSection(targetId);
-      const navItem = e.currentTarget.parentElement;
-      if (navItem) {
-        const rect = navItem.getBoundingClientRect();
-        setLeft(navItem.offsetLeft);
-        setWidth(rect.width);
-      }
 
       // Calculate exact scroll position
       const elementPosition = element.getBoundingClientRect().top;
@@ -119,7 +71,7 @@ export function NavMenu() {
         {navs.map((item) => (
           <li
             key={item.name}
-            className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-base transition-colors duration-200 ${activeSection === item.href.substring(1)
+            className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-base transition-colors duration-200 ${pathname === item.href
               ? "text-primary"
               : "text-primary/60 hover:text-primary"
               } tracking-tight`}

@@ -7,7 +7,7 @@ import {
   Sad01Icon,
 } from "hugeicons-react";
 import { LoaderIcon } from "lucide-react";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button, buttonVariants } from "./ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -17,18 +17,20 @@ interface GenerationProgressProps {
   progress: number;
   statusMessage: string | null;
   error: string | null;
+  ui: ReactNode | null;
 }
 
 export function GenerationProgress({
   progress,
   statusMessage,
   error,
+  ui,
 }: GenerationProgressProps) {
   if (error) {
     toast.error(error);
 
     return (
-      <div className="flex items-center justify-center h-full z-10 -mt-8 border border-red-500">
+      <div className="flex items-center justify-center h-full z-10">
         <div className="text-center max-w-md">
           <div className="flex items-center justify-center">
             <AlertCircleIcon className="size-8 " />
@@ -58,8 +60,10 @@ export function GenerationProgress({
     );
   }
 
+  console.log("ui", ui);
+
   return (
-    <div className="flex items-center justify-center h-dvh absolute w-dvw  overflow-hidden z-10 -mt-8 border border-red-500">
+    <div className="flex items-center justify-center h-dvh absolute w-dvw  overflow-hidden z-10">
       <div className="text-center max-w-md w-full px-6">
         <div className="flex items-center justify-center">
           <LoaderIcon className="size-8 animate-spin" />
@@ -71,6 +75,11 @@ export function GenerationProgress({
         <p className="text-muted-foreground text-sm">
           This may take a few minutes.
         </p>
+        {ui && typeof ui === 'object' && 'type' in ui ? (
+          React.createElement(ui.type, ui.props)
+        ) : (
+          ui as ReactNode
+        )}
       </div>
     </div>
   );

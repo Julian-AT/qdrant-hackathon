@@ -6,6 +6,7 @@ import Script from 'next/script';
 import { DataStreamProvider } from '@/components/data-stream-provider';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
+import NoiseBackground from '@/components/noise-background';
 
 export const experimental_ppr = true;
 

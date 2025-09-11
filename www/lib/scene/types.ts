@@ -1,7 +1,9 @@
 import type { ChatMessage, SceneResult } from '@/lib/types';
+import React, { ReactNode } from 'react';
 
 export interface SceneGenerationConfig {
     includeIkeaFurniture: boolean;
+    enableUpscaling: boolean;
     maxRetries: number;
     imageWidth: number;
     imageHeight: number;
@@ -9,7 +11,7 @@ export interface SceneGenerationConfig {
     inferenceSteps: number;
 }
 
-export type ProgressCallback = (progress: number, message: string) => void;
+export type ProgressCallback = (progress: number, message: string, ui?: ReactNode) => void;
 
 export interface SceneGenerationResult {
     scene: SceneResult;

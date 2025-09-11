@@ -9,6 +9,7 @@ import { DataStreamHandler } from '@/components/data-stream-handler';
 import { friendlyWords } from "friendlier-words"
 import AnimatedGradientBackground from '@/components/animated-gradient-background';
 import CommunityScenes from '@/components/community-scenes';
+import NoiseBackground from '@/components/noise-background';
 
 export default async function Page() {
     const session = await auth();
@@ -24,30 +25,32 @@ export default async function Page() {
 
     if (!modelIdFromCookie) {
         return (
-            <div className='relative bg-background/70'>
+            <>
+                <NoiseBackground />
                 <Chat
                     key={id}
                     id={id}
                     initialMessages={[]}
                     initialChatModel={DEFAULT_CHAT_MODEL}
-                    initialVisibilityType="private"
+                    initialVisibilityType="public"
                     isReadonly={false}
                     session={session}
                     autoResume={false}
                 />
                 <DataStreamHandler />
-            </div>
+            </>
         );
     }
 
     return (
         <>
+            <NoiseBackground />
             <Chat
                 key={id}
                 id={id}
                 initialMessages={[]}
                 initialChatModel={modelIdFromCookie.value}
-                initialVisibilityType="private"
+                initialVisibilityType="public"
                 isReadonly={false}
                 session={session}
                 autoResume={false}

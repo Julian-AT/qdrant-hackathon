@@ -145,7 +145,19 @@
   50% {
     transform: translate(-50%, -50%) scale(0.9);
     }
-  }  
+  }
+  
+  --animate-fade-in-up: fade-in-up 1.5s ease-out forwards;
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(100px) translateY(50%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(50%);
+    }
+  }
 }
 
 @layer base {

@@ -31,6 +31,7 @@ import { saveChatModelAsCookie } from '@/app/(scene)/actions';
 import { startTransition } from 'react';
 import { useScene } from '@/hooks/use-scene';
 import { toast } from 'sonner';
+import Image from "next/image";
 
 // Types
 export interface FileWithPreview {
@@ -56,6 +57,7 @@ export interface ModelOption {
     name: string;
     description: string;
     badge?: string;
+    icon: string;
 }
 
 interface ChatInputProps {
@@ -91,24 +93,6 @@ interface ChatInputProps {
 const MAX_FILES = 10;
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const PASTE_THRESHOLD = 200; // characters threshold for showing as pasted content
-const DEFAULT_MODELS_INTERNAL: ModelOption[] = [
-    {
-        id: "claude-sonnet-4",
-        name: "Claude Sonnet 4",
-        description: "Balanced model",
-        badge: "Latest",
-    },
-    {
-        id: "claude-opus-3.5",
-        name: "Claude Opus 3.5",
-        description: "Highest intelligence",
-    },
-    {
-        id: "claude-haiku-3",
-        name: "Claude Haiku 3",
-        description: "Fastest responses",
-    },
-];
 
 // File type helpers
 const getFileIcon = (type: string) => {
@@ -484,6 +468,10 @@ function PureMultimodalInput({
             ...prevScene,
             id: sceneId,
             isLoading: true,
+            statusMessage: 'Generating scene...',
+            error: null,
+            progress: 0,
+            image: null,
         }));
 
         setAttachments(fileAttachments);
@@ -573,7 +561,8 @@ function PureMultimodalInput({
                                 id: model.id,
                                 name: model.name,
                                 description: model.description,
-                                badge: model.id === 'claude-3-5-sonnet-20241022' ? 'Latest' : undefined
+                                badge: model.id === 'Mistral 7B' ? 'Latest' : undefined,
+                                icon: model.icon
                             }))}
                             selectedModel={selectedModel}
                             onModelChange={(modelId) => {
@@ -787,6 +776,7 @@ const ModelSelectorDropdown: React.FC<{
                 className="h-9 px-2.5 text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-700"
                 onClick={() => setIsOpen(!isOpen)}
             >
+                <img src={selectedModelData.icon} alt={selectedModelData.name} width={12} height={12} />
                 <span className="truncate max-w-[150px] sm:max-w-[200px]">
                     {selectedModelData.name}
                 </span>
@@ -814,6 +804,7 @@ const ModelSelectorDropdown: React.FC<{
                         >
                             <div>
                                 <div className="flex items-center gap-2">
+                                    <img src={model.icon} alt={model.name} width={16} height={16} />
                                     <span className="font-medium text-zinc-100">
                                         {model.name}
                                     </span>

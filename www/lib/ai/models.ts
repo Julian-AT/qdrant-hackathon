@@ -4,17 +4,20 @@ export interface ChatModel {
     id: string;
     name: string;
     description: string;
+    icon: string;
 }
 
 export const chatModels: Array<ChatModel> = [
     {
         id: 'chat-model',
-        name: 'Chat model',
-        description: 'Primary model for all-purpose chat',
+        name: 'Mistral 7B',
+        description: 'Latest model from Mistral',
+        icon: '/mistral.webp'
     },
     {
         id: 'chat-model-reasoning',
-        name: 'Reasoning model',
-        description: 'Uses advanced reasoning',
+        name: 'GPT-5',
+        description: 'Latest model from OpenAI',
+        icon: '/openai.webp'
     },
 ];

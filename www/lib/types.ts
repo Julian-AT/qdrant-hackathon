@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { InferUITool, UIMessage } from 'ai';
+import { ReactNode } from 'react';
 
 export type DataPart = { type: 'append-message'; message: string };
 
@@ -16,6 +17,7 @@ export type CustomUIDataTypes = {
         progress: number;
         message: string;
         isComplete?: boolean;
+        ui?: ReactNode;
     };
     sceneResult: {
         id: string;
@@ -101,6 +103,7 @@ export interface SceneResult {
     prompt: string;
     image: string;
     isComplete: boolean;
+    createdAt: string;
 }
 
 export interface SceneError {

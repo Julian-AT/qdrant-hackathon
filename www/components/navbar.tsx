@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { GithubIcon } from "hugeicons-react";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion, useScroll } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -66,22 +67,23 @@ export function Navbar() {
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
   const handleOverlayClick = () => setIsDrawerOpen(false);
 
-  // if (pathname.startsWith('/scene/')) {
-  //     return null;
-  // }
+  if (pathname.startsWith('/scene/')) {
+    return null;
+  }
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 mx-4 flex justify-center transition-all duration-300 md:mx-0 mb-40",
+        "sticky top-0 z-50 mx-4 flex justify-center transition-all md:mx-0 bg-transparent ",
         hasScrolled && "backdrop-blur-lg border-b border-white/[0.05]",
         pathname.startsWith("/scene/") && "mb-0"
       )}
     >
       <div className="flex h-16 items-center p-4 container mx-auto justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3">
-            <p className="text-xl font-semibold text-primary">Submission</p>
+          <Link href="/" className="flex items-center gap-1.5">
+            <Image src="/logo.svg" alt="Interiorly" width={32} height={32} />
+            <p className="text-xl font-semibold text-primary">Interiorly</p>
           </Link>
           <NavMenu />
         </div>
@@ -119,7 +121,7 @@ export function Navbar() {
               animate="visible"
               exit="exit"
               variants={overlayVariants}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0 }}
               onClick={handleOverlayClick}
             />
 

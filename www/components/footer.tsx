@@ -1,6 +1,8 @@
 "use client"
 
-import { GithubIcon } from "hugeicons-react";
+import { GithubIcon, Linkedin01Icon, Linkedin02Icon } from "hugeicons-react";
+import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -41,18 +43,19 @@ const defaultSections = [
 
 const defaultSocialLinks = [
     { icon: <GithubIcon className="size-5" />, href: "https://github.com/julian-at", label: "GitHub" },
+    { icon: <Linkedin02Icon className="size-5" />, href: "https://www.linkedin.com/in/julian-at/", label: "LinkedIn" },
 ];
 
 
 export const Footer = ({
     logo = {
-        url: "https://www.julianschmidt.cv/assets/images/profile.jpg",
-        src: "https://www.julianschmidt.cv/assets/images/profile.jpg",
+        url: "/",
+        src: "/logo.svg",
         alt: "logo",
-        title: "Qdrant Hackathon",
+        title: "Interiorly",
     },
     sections = defaultSections,
-    description = "Submission for Qdrant Think outside the bot hackathon. This project is open-source and not commercial.",
+    description = "Generate your dream Home. Powered by Qdrant",
     socialLinks = defaultSocialLinks,
     copyright = "Julian S. All rights reserved.",
     legalLinks = [],
@@ -70,18 +73,14 @@ export const Footer = ({
                     <div className="flex w-full flex-col justify-between gap-6 lg:items-start">
                         {/* Logo */}
                         <div className="flex items-center gap-2 lg:justify-start">
-                            <a href={logo.url}>
-                                <img
-                                    src={logo.src}
-                                    alt={logo.alt}
-                                    title={logo.title}
-                                    className="h-8 rounded-full"
-                                />
-                            </a>
+                            <Image src={logo.src} alt={logo.alt} width={32} height={32} />
                             <h2 className="text-xl font-semibold">{logo.title}</h2>
                         </div>
                         <p className="max-w-[70%] text-sm text-muted-foreground">
                             {description}
+                            <br /><br />
+                            This project is open-source and not commercial. <br />
+                            Specifically crafted for &quot;Think outside the bot&quot; hackathon.
                         </p>
                         <ul className="flex items-center space-x-6 text-muted-foreground">
                             {socialLinks.map((social, idx) => (
@@ -101,11 +100,15 @@ export const Footer = ({
                                 <h3 className="mb-4 font-bold">{section.title}</h3>
                                 <ul className="space-y-3 text-sm text-muted-foreground">
                                     {section.links.map((link, linkIdx) => (
-                                        <li
-                                            key={linkIdx}
-                                            className="font-medium hover:text-primary"
-                                        >
-                                            <a href={link.href}>{link.name}</a>
+                                        <li key={linkIdx}>
+                                            <Link
+                                                href={link.href}
+                                                className="font-medium hover:text-primary"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {link.name}
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -114,14 +117,10 @@ export const Footer = ({
                     </div>
                 </div>
                 <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
-                    <p className="order-2 lg:order-1">{copyright}</p>
-                    <ul className="order-1 flex flex-col gap-2 md:order-2 md:flex-row">
-                        {legalLinks.map((link, idx) => (
-                            <li key={idx} className="hover:text-primary">
-                                <a href={link.href}> {link.name}</a>
-                            </li>
-                        ))}
-                    </ul>
+                    <p>{copyright}</p>
+                    <p>
+                        Engineered with ❤️ in Austria
+                    </p>
                 </div>
             </div>
         </section>
