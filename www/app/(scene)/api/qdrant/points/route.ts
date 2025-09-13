@@ -49,10 +49,6 @@ export async function GET(request: NextRequest) {
             points = scrollResult.points;
         }
 
-        console.log(points);
-
-
-
         const processedPoints = points;
 
         const response = NextResponse.json({

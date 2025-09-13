@@ -22,9 +22,6 @@ export async function GET(request: Request) {
         ).toResponse();
     }
 
-    console.log("publicScenes", publicScenes.length);
-
-
     const hasMore = publicScenes.length === 12;
     const nextPage = hasMore ? parseInt(page) + 1 : null;
     const previousPage = parseInt(page) > 0 ? parseInt(page) - 1 : null;
