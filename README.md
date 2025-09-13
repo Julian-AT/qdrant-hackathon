@@ -45,7 +45,7 @@ The Qdrant visual search pipeline:
 3. **Vector Search**: Each furniture segment gets embedded using CLIP and queried against the Qdrant image database to find visually similar IKEA products
 4. **Furniture Injection**: SeedDream-4 replaces the AI-generated furniture with actual IKEA products, maintaining the room's lighting and perspective
 
-![Pipeline Diagram](./assets/pipeline-diagram.png)
+![Pipeline Diagram](./assets/architecture.png)
 
 This approach demonstrates Qdrant's strength in visual similarity search - the CLIP embeddings enable precise furniture matching that feels natural and contextually appropriate. The vector database performance allows real-time querying during the segmentation and injection process.
 
