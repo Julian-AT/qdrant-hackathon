@@ -43,7 +43,20 @@ export class IkeaService {
   }
 
   async getSegment(bbox: number[], baseImage: string): Promise<string> {
-    const imageBuffer = Buffer.from(baseImage.split(',')[1], 'base64');
+    let imageBuffer: Buffer;
+
+    if (baseImage.startsWith('data:image/')) {
+      imageBuffer = Buffer.from(baseImage.split(',')[1], 'base64');
+    } else if (baseImage.startsWith('http://') || baseImage.startsWith('https://')) {
+      const response = await fetch(baseImage);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      imageBuffer = Buffer.from(arrayBuffer);
+    } else {
+      throw new Error('Invalid image format. Expected base64 or URL.');
+    }
 
     const [x_min, y_min, x_max, y_max] = bbox;
 
@@ -142,7 +155,7 @@ export class IkeaService {
 
 
 
-        const embedding = JSON.parse(output) as unknown as number[];
+        const embedding = output as number[];
         const ikeaProduct = await this.qdrant.search(this.collectionName, {
           vector: embedding,
           limit: 1,

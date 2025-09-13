@@ -18,6 +18,6 @@ export const chatModels: Array<ChatModel> = [
         id: 'chat-model-reasoning',
         name: 'GPT-5',
         description: 'Latest model from OpenAI',
-        icon: '/openai.webp'
+        icon: '/openai.png'
     },
 ];

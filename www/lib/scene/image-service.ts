@@ -4,6 +4,9 @@ import { myProvider } from "@/lib/ai/providers";
 import type { ChatMessage } from "@/lib/types";
 import type { IkeaProduct, ImageGenerationOptions } from "./types";
 import { ImageGenerationError } from "./types";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import crypto from 'crypto';
 
 interface ReplicateResult {
   url: () => string;
@@ -18,12 +21,47 @@ export interface SegmentationResult {
 
 export class ImageService {
   private replicate: Replicate;
+  private s3Client: S3Client;
+  private bucketName: string;
+  private publicUrl: string;
 
   constructor() {
     if (!process.env.REPLICATE_API_TOKEN) {
       throw new Error("REPLICATE_API_TOKEN is required");
     }
     this.replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
+
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+    const accessKeyId = process.env.CLOUDFLARE_R2_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY;
+    const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+    const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+    if (!accountId || !accessKeyId || !secretAccessKey || !bucketName) {
+      throw new ImageGenerationError(
+        "Missing required R2 environment variables",
+        new Error("CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_R2_ACCESS_KEY_ID, CLOUDFLARE_R2_SECRET_ACCESS_KEY, and CLOUDFLARE_R2_BUCKET_NAME are required")
+      );
+    }
+
+    this.bucketName = bucketName;
+    this.publicUrl = publicUrl || `https://${bucketName}.${accountId}.r2.cloudflarestorage.com`;
+
+    const r2Endpoint = `https://${accountId}.r2.cloudflarestorage.com`;
+
+    this.s3Client = new S3Client({
+      region: 'auto',
+      endpoint: r2Endpoint,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      forcePathStyle: true,
+      requestHandler: {
+        requestTimeout: 30000,
+        connectionTimeout: 10000,
+      },
+    });
   }
 
   async generateRoomDescription(messages: ChatMessage[]): Promise<string> {
@@ -63,7 +101,7 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
     options: Partial<ImageGenerationOptions> = {}
   ): Promise<{
     imageUrl: string;
-    imageData: string;
+    r2Url: string;
   }> {
     try {
       const result: ReplicateResult[] = (await this.replicate.run(
@@ -89,13 +127,19 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
         }
       )) as unknown as ReplicateResult[];
 
-      const imageUrl = result[0].url();
-      const image = await fetch(imageUrl);
+      const tempImageUrl = result[0].url();
+      const image = await fetch(tempImageUrl);
       const imageBuffer = await image.arrayBuffer();
-      const base64 = Buffer.from(imageBuffer).toString("base64");
+
+      const uploadResult = await this.uploadImageBuffer(
+        Buffer.from(imageBuffer),
+        'image/png',
+        'panoramas'
+      );
+
       return {
-        imageUrl,
-        imageData: `data:image/jpeg;base64,${base64}`,
+        imageUrl: tempImageUrl,
+        r2Url: uploadResult.url,
       };
     } catch (error) {
       throw new ImageGenerationError(
@@ -137,24 +181,30 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
     }
   }
 
-  async injectIkeaProducts(baseImage: string, ikeaProducts: IkeaProduct[]): Promise<string> {
+  async injectIkeaProducts(baseImageUrl: string, ikeaProducts: IkeaProduct[]): Promise<string> {
     try {
-      const imageData = await this.ensureBase64Image(baseImage);
-      const imageDataBuffer = Buffer.from(imageData.split(',')[1], "base64");
+      const baseImageResponse = await fetch(baseImageUrl);
+      const baseImageBuffer = await baseImageResponse.arrayBuffer();
 
       const result = await this.replicate.run("google/nano-banana", {
         input: {
           prompt: "Inject the ikea products into the fully furnished panorama image. Make the scene natural. ",
-          image_input: [imageDataBuffer, ...ikeaProducts.map(product => product.imageUrl)],
+          image_input: [Buffer.from(baseImageBuffer), ...ikeaProducts.map(product => product.imageUrl)],
           output_format: "jpg"
         }
       }) as unknown as ReplicateResult[];
 
-      const imageUrl = result[0].url();
-      const image = await fetch(imageUrl);
+      const tempImageUrl = result[0].url();
+      const image = await fetch(tempImageUrl);
       const imageBuffer = await image.arrayBuffer();
-      const base64 = Buffer.from(imageBuffer).toString("base64");
-      return `data:image/jpeg;base64,${base64}`;
+
+      const uploadResult = await this.uploadImageBuffer(
+        Buffer.from(imageBuffer),
+        'image/jpeg',
+        'panoramas'
+      );
+
+      return uploadResult.url;
     } catch (error) {
       console.log(error);
       throw new ImageGenerationError(
@@ -166,18 +216,18 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
 
 
   async upscaleImage(
-    baseImage: string,
+    baseImageUrl: string,
   ): Promise<string> {
     try {
-      const imageData = await this.ensureBase64Image(baseImage);
-      const imageDataBuffer = Buffer.from(imageData.split(',')[1], "base64");
+      const baseImageResponse = await fetch(baseImageUrl);
+      const baseImageBuffer = await baseImageResponse.arrayBuffer();
 
       const result: ReplicateResult[] = await this.replicate.run(
         "philz1337x/clarity-upscaler:dfad41707589d68ecdccd1dfa600d55a208f9310748e44bfe35b4a6291453d5e",
         {
           input: {
             seed: 1337,
-            image: imageDataBuffer,
+            image: Buffer.from(baseImageBuffer),
             prompt:
               "masterpiece, best quality, highres, <lora:more_details:0.5> <lora:SDXLrender_v2.0:1>",
             dynamic: 6,
@@ -203,13 +253,18 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
         }
       ) as unknown as ReplicateResult[];
 
-      const imageUrl = result[0].url();
-      const image = await fetch(imageUrl);
+      const tempImageUrl = result[0].url();
+      const image = await fetch(tempImageUrl);
       const imageBuffer = await image.arrayBuffer();
-      const base64 = Buffer.from(imageBuffer).toString("base64");
-      return `data:image/jpeg;base64,${base64}`;
+
+      const uploadResult = await this.uploadImageBuffer(
+        Buffer.from(imageBuffer),
+        'image/png',
+        'panoramas'
+      );
+
+      return uploadResult.url;
     } catch (error) {
-      console.log(error);
       console.log(error);
       throw new ImageGenerationError(
         "Failed to enhance image with furniture",
@@ -248,5 +303,100 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
       image.startsWith("http://") ||
       image.startsWith("https://")
     );
+  }
+
+  private async uploadImageBuffer(
+    imageBuffer: Buffer,
+    contentType: string = 'image/jpeg',
+    folder: string = 'images'
+  ): Promise<{ url: string; key: string }> {
+    try {
+      const key = this.generateImageKey(folder, contentType);
+
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: imageBuffer,
+        ContentType: contentType,
+        CacheControl: 'public, max-age=31536000',
+      });
+
+      await this.s3Client.send(command);
+      const signedUrl = await this.getSignedUrl(key);
+
+      return { url: signedUrl, key };
+    } catch (error) {
+      throw new ImageGenerationError(
+        "Failed to upload image to R2",
+        error as Error
+      );
+    }
+  }
+
+  private async getSignedUrl(key: string, expiresIn: number = 86400): Promise<string> {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      });
+
+      const signedUrl = await getSignedUrl(this.s3Client, command, { expiresIn });
+      return signedUrl;
+    } catch (error) {
+      throw new ImageGenerationError(
+        "Failed to generate signed URL",
+        error as Error
+      );
+    }
+  }
+
+  private generateImageKey(folder: string, contentType: string): string {
+    const extension = this.getExtensionFromContentType(contentType);
+    const timestamp = Date.now();
+    const randomId = crypto.randomUUID();
+    return `${folder}/${timestamp}-${randomId}.${extension}`;
+  }
+
+  private getExtensionFromContentType(contentType: string): string {
+    switch (contentType) {
+      case 'image/jpeg':
+        return 'jpg';
+      case 'image/png':
+        return 'png';
+      case 'image/webp':
+        return 'webp';
+      case 'image/gif':
+        return 'gif';
+      default:
+        return 'jpg';
+    }
+  }
+
+  async testR2Connection(): Promise<boolean> {
+    try {
+      const testKey = `test/${Date.now()}-connection-test.txt`;
+      const testBuffer = Buffer.from('test', 'utf-8');
+
+      const putCommand = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: testKey,
+        Body: testBuffer,
+        ContentType: 'text/plain',
+      });
+
+      await this.s3Client.send(putCommand);
+
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: testKey,
+      });
+
+      await this.s3Client.send(deleteCommand);
+
+      return true;
+    } catch (error) {
+      console.error('R2 connection test failed:', error);
+      return false;
+    }
   }
 }

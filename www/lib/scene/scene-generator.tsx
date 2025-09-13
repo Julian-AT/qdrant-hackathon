@@ -45,8 +45,8 @@ export class SceneGenerator {
             steps.push('Started panoramic image generation');
 
             const {
-                imageData: baseImage,
-                imageUrl,
+                r2Url: baseImageUrl,
+                imageUrl: tempImageUrl,
             } = await this.imageService.generatePanorama(roomDescription, {
                 width: config.imageWidth,
                 height: config.imageHeight,
@@ -55,19 +55,15 @@ export class SceneGenerator {
             });
             steps.push('Generated base panoramic image');
 
-            let finalImage = baseImage;
+            let finalImageUrl = baseImageUrl;
 
             if (config.includeIkeaFurniture && this.ikeaService) {
                 try {
                     onProgress?.(30, 'Analyzing furniture in the image...');
                     steps.push('Started IKEA furniture integration');
 
-                    onProgress?.(35, 'Converting image for analysis...');
-                    const imageData = await this.imageService.ensureBase64Image(baseImage);
-                    steps.push('Image converted to base64 format');
-
                     onProgress?.(45, 'Detecting objects in the scene...');
-                    const segmentationResult = await this.imageService.segmentImage(imageUrl);
+                    const segmentationResult = await this.imageService.segmentImage(tempImageUrl);
                     console.log(segmentationResult);
 
 
@@ -82,7 +78,7 @@ export class SceneGenerator {
                             steps.push('Started image upscaling');
 
                             try {
-                                finalImage = await this.imageService.upscaleImage(baseImage);
+                                finalImageUrl = await this.imageService.upscaleImage(baseImageUrl);
                                 steps.push('Image upscaled successfully');
                             } catch (error) {
                                 console.warn('Image upscaling failed, using original image:', error);
@@ -98,7 +94,7 @@ export class SceneGenerator {
                                 id: sceneId,
                                 title: sceneTitle,
                                 prompt: roomDescription,
-                                image: finalImage,
+                                image: finalImageUrl,
                                 isComplete: true,
                                 createdAt: new Date().toISOString(),
                             },
@@ -112,11 +108,11 @@ export class SceneGenerator {
                     }
 
                     onProgress?.(55, 'Extracting furniture segments...');
-                    const segments = await this.ikeaService.getSegments(segmentationResult, baseImage);
+                    const segments = await this.ikeaService.getSegments(segmentationResult, baseImageUrl);
                     steps.push(`Extracted ${segments.length} furniture segments`);
 
                     onProgress?.(65, 'Filtering furniture for IKEA compatibility...');
-                    const filteredSegments = await this.ikeaService.filterSegmentsLLM(segments, baseImage);
+                    const filteredSegments = await this.ikeaService.filterSegmentsLLM(segments, baseImageUrl);
                     steps.push(`Filtered to ${filteredSegments.length} IKEA-compatible furniture items`);
 
                     if (filteredSegments.length === 0) {
@@ -127,7 +123,7 @@ export class SceneGenerator {
                             steps.push('Started image upscaling');
 
                             try {
-                                finalImage = await this.imageService.upscaleImage(baseImage);
+                                finalImageUrl = await this.imageService.upscaleImage(baseImageUrl);
                                 steps.push('Image upscaled successfully');
                             } catch (error) {
                                 console.warn('Image upscaling failed, using original image:', error);
@@ -143,7 +139,7 @@ export class SceneGenerator {
                                 id: sceneId,
                                 title: sceneTitle,
                                 prompt: roomDescription,
-                                image: finalImage,
+                                image: finalImageUrl,
                                 isComplete: true,
                                 createdAt: new Date().toISOString(),
                             },
@@ -163,7 +159,7 @@ export class SceneGenerator {
 
 
                     onProgress?.(85, `Integrating ${ikeaProductsUsed} IKEA products into scene...`);
-                    finalImage = await this.imageService.injectIkeaProducts(baseImage, ikeaProducts);
+                    finalImageUrl = await this.imageService.injectIkeaProducts(baseImageUrl, ikeaProducts);
                     steps.push('IKEA products integrated into scene');
 
                     if (ikeaProductsUsed > 0) {
@@ -192,7 +188,7 @@ export class SceneGenerator {
                 steps.push('Started image upscaling');
 
                 try {
-                    finalImage = await this.imageService.upscaleImage(finalImage);
+                    finalImageUrl = await this.imageService.upscaleImage(finalImageUrl);
                     steps.push('Image upscaled successfully');
                 } catch (error) {
                     console.warn('Image upscaling failed, using original image:', error);
@@ -211,7 +207,7 @@ export class SceneGenerator {
                 id: sceneId,
                 title: sceneTitle,
                 prompt: roomDescription,
-                image: finalImage,
+                image: finalImageUrl,
                 isComplete: true,
                 createdAt: new Date().toISOString(),
             };
@@ -227,6 +223,8 @@ export class SceneGenerator {
             };
 
         } catch (error) {
+            console.log(error);
+
             const processingTime = Date.now() - startTime;
             steps.push(`Generation failed: ${(error as Error).message}`);
 
