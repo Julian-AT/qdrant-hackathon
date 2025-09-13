@@ -24,6 +24,7 @@ import { HeroPill } from "./hero-pill";
 import { Home01Icon } from "hugeicons-react";
 import NoiseBackground from "./noise-background";
 import CommunityScenes from "./community-scenes";
+import PersonalScenes from "./personal-scenes";
 
 export function Chat({
   id,
@@ -126,7 +127,7 @@ export function Chat({
 
   return (
     <>
-      <div className="relative flex flex-col min-w-0 h-full overflow-hidden max-w-dvw">
+      <div className="relative flex flex-col min-w-0 h-full overflow-hidden max-w-dvw ">
         {messages.length > 0 ? (
           <Scene
             sceneId={id}
@@ -192,10 +193,10 @@ export function Chat({
                     <div className="w-[45rem] h-[45rem] rounded-full bg-gradient-to-t from-purple-800/50 to-orange-800/50 blur-[30px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
                   </div>
                 </div>
-                <div className="relative z-[3]">
+                <div className="relative z-[3] p-3">
+                  <PersonalScenes isMinified />
                   <CommunityScenes isMinified />
                 </div>
-
               </>
             )}
           </>

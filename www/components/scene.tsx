@@ -67,14 +67,27 @@ const Scene = ({
 
     try {
       const latestSceneImage = sceneResults[0];
-      const blobUrl = base64ToBlobUrl(latestSceneImage.image);
-      console.log(
-        "Successfully converted image to blob URL:",
-        blobUrl.substring(0, 50) + "..."
-      );
-      return blobUrl;
+
+      // If it's already a URL (R2), use it directly
+      if (latestSceneImage.image.startsWith('http://') || latestSceneImage.image.startsWith('https://')) {
+        console.log("Using R2 URL directly:", latestSceneImage.image.substring(0, 50) + "...");
+        return latestSceneImage.image;
+      }
+
+      // If it's base64, convert to blob URL for backward compatibility
+      if (isValidBase64Image(latestSceneImage.image)) {
+        const blobUrl = base64ToBlobUrl(latestSceneImage.image);
+        console.log(
+          "Successfully converted base64 image to blob URL:",
+          blobUrl.substring(0, 50) + "..."
+        );
+        return blobUrl;
+      }
+
+      console.error("Invalid image format:", latestSceneImage.image.substring(0, 50));
+      return null;
     } catch (error) {
-      console.error("Error converting image:", error);
+      console.error("Error processing image:", error);
       return null;
     }
   }, [messages]);

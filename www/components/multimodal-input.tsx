@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { UIMessage } from 'ai';
 import type { UseChatHelpers } from '@ai-sdk/react';
@@ -32,6 +34,7 @@ import { startTransition } from 'react';
 import { useScene } from '@/hooks/use-scene';
 import { toast } from 'sonner';
 import Image from "next/image";
+import { PreferencesPopover } from "./preferences-popover";
 
 // Types
 export interface FileWithPreview {
@@ -93,6 +96,54 @@ interface ChatInputProps {
 const MAX_FILES = 10;
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const PASTE_THRESHOLD = 200; // characters threshold for showing as pasted content
+
+// Animated placeholder messages
+const PLACEHOLDER_MESSAGES = [
+    "Describe your ideal room setup...",
+    "Ask me to find furniture for your space...",
+    "Upload an image and I'll help redesign it...",
+    "Tell me about your style preferences...",
+    "What kind of atmosphere are you going for?",
+    "Describe the room you want to create...",
+    "Ask for suggestions based on your budget...",
+    "Upload a floor plan and let's design together..."
+];
+
+// Typing Animation Component
+const TypingPlaceholder: React.FC<{
+    text: string;
+    className?: string;
+    duration?: number;
+    onComplete?: () => void;
+}> = ({ text, className, duration = 100, onComplete }) => {
+    const [displayedText, setDisplayedText] = useState<string>("");
+
+    useEffect(() => {
+        setDisplayedText("");
+        const graphemes = Array.from(text);
+        let i = 0;
+
+        const typingEffect = setInterval(() => {
+            if (i < graphemes.length) {
+                setDisplayedText(graphemes.slice(0, i + 1).join(""));
+                i++;
+            } else {
+                clearInterval(typingEffect);
+                onComplete?.();
+            }
+        }, duration);
+
+        return () => {
+            clearInterval(typingEffect);
+        };
+    }, [text, duration, onComplete]);
+
+    return (
+        <span className={className}>
+            {displayedText}
+        </span>
+    );
+};
 
 // File type helpers
 const getFileIcon = (type: string) => {
@@ -240,9 +291,12 @@ function PureMultimodalInput({
     const [pastedContent, setPastedContent] = useState<PastedContent[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [selectedModel, setSelectedModel] = useState(selectedModelId);
+    const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+    const [isTypingComplete, setIsTypingComplete] = useState(false);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const { setScene } = useScene();
 
     useEffect(() => {
@@ -255,6 +309,42 @@ function PureMultimodalInput({
                 textareaRef.current.scrollHeight,
                 maxHeight
             )}px`;
+        }
+    }, [input]);
+
+    const handleTypingComplete = useCallback(() => {
+        setIsTypingComplete(true);
+    }, []);
+
+    const switchToNextPlaceholder = useCallback(() => {
+        setCurrentPlaceholder((prev) => (prev + 1) % PLACEHOLDER_MESSAGES.length);
+        setIsTypingComplete(false);
+    }, []);
+
+    useEffect(() => {
+        if (isTypingComplete) {
+            const timeout = setTimeout(() => {
+                switchToNextPlaceholder();
+            }, 2000);
+
+            return () => clearTimeout(timeout);
+        }
+    }, [isTypingComplete, switchToNextPlaceholder]);
+
+    const handleVisibilityChange = useCallback(() => {
+        if (document.visibilityState === "visible") {
+            setIsTypingComplete(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, [handleVisibilityChange]);
+
+    useEffect(() => {
+        if (input) {
+            setIsTypingComplete(false);
         }
     }, [input]);
 
@@ -306,7 +396,6 @@ function PureMultimodalInput({
             setFiles((prev) => [...prev, ...newFiles]);
 
             newFiles.forEach((fileToUpload) => {
-                // Read text content for textual files
                 if (isTextualFile(fileToUpload.file)) {
                     readFileAsText(fileToUpload.file)
                         .then((textContent) => {
@@ -334,7 +423,6 @@ function PureMultimodalInput({
                     )
                 );
 
-                // Simulate upload progress
                 let progress = 0;
                 const interval = setInterval(() => {
                     progress += Math.random() * 20 + 5;
@@ -441,7 +529,6 @@ function PureMultimodalInput({
 
         window.history.replaceState({}, '', `/scene/${sceneId}`);
 
-        // Convert files to attachments format
         const fileAttachments = files.map((file) => ({
             url: file.preview || URL.createObjectURL(file.file),
             name: file.file.name,
@@ -524,36 +611,51 @@ function PureMultimodalInput({
                     onChange={(e) => setInput(e.target.value)}
                     onPaste={handlePaste}
                     onKeyDown={handleKeyDown}
-                    placeholder="Send a message..."
+                    placeholder=""
                     disabled={status !== 'ready'}
                     className="flex-1 min-h-[100px] w-full p-4 focus-within:border-none focus:outline-none focus:border-none border-none outline-none focus-within:ring-0 focus-within:ring-offset-0 focus-within:outline-none max-h-[120px] resize-none border-0 bg-transparent text-zinc-100 shadow-none focus-visible:ring-0 placeholder:text-zinc-500 text-sm sm:text-base custom-scrollbar"
                     rows={1}
                 />
+
+                {/* Typing Animated Placeholder */}
+                <div className="absolute inset-0 flex items-start pt-4 pl-4 pointer-events-none">
+                    {!input && (
+                        <TypingPlaceholder
+                            key={`current-placeholder-${currentPlaceholder}`}
+                            text={PLACEHOLDER_MESSAGES[currentPlaceholder]}
+                            className="text-zinc-500 text-sm sm:text-base font-normal w-[calc(100%-2rem)]"
+                            duration={75}
+                            onComplete={handleTypingComplete}
+                        />
+                    )}
+                </div>
                 <div className="flex items-center gap-2 justify-between w-full px-3 pb-1.5">
                     <div className="flex items-center gap-2">
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-9 w-9 p-0 text-zinc-400 hover:text-zinc-200 hover:bg-background flex-shrink-0"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={status !== 'ready' || files.length >= MAX_FILES}
-                            title={
-                                files.length >= MAX_FILES
-                                    ? `Max ${MAX_FILES} files reached`
-                                    : "Attach files"
-                            }
-                        >
-                            <Plus className="h-5 w-5" />
-                        </Button>
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-9 w-9 p-0 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700 flex-shrink-0"
-                            disabled={status !== 'ready'}
-                            title="Options (Not implemented)"
-                        >
-                            <SlidersHorizontal className="h-5 w-5" />
-                        </Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-9 w-9 p-0 text-zinc-400 hover:text-zinc-200 hover:bg-background flex-shrink-0"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={status !== 'ready' || files.length >= MAX_FILES}
+                                >
+                                    <Plus className="h-5 w-5" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>
+                                    {files.length >= MAX_FILES
+                                        ? `Max ${MAX_FILES} files reached`
+                                        : "Attach files"
+                                    }
+                                </p>
+                            </TooltipContent>
+                        </Tooltip>
+                        <PreferencesPopover
+                            sceneId={sceneId}
+                            selectedVisibilityType={selectedVisibilityType}
+                        />
                     </div>
                     <div className="flex items-center gap-2">
                         <ModelSelectorDropdown
@@ -573,20 +675,26 @@ function PureMultimodalInput({
                             }}
                         />
 
-                        <Button
-                            size="icon"
-                            className={cn(
-                                "h-9 w-9 p-0 flex-shrink-0 transition-colors rounded-full",
-                                canSend
-                                    ? "bg-primary text-primary-foreground cursor-pointer"
-                                    : "bg-card border text-muted-foreground cursor-not-allowed"
-                            )}
-                            onClick={handleSend}
-                            disabled={!canSend}
-                            title="Send message"
-                        >
-                            <ArrowUp className="h-5 w-5" />
-                        </Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="icon"
+                                    className={cn(
+                                        "h-9 w-9 p-0 flex-shrink-0 transition-colors rounded-full",
+                                        canSend
+                                            ? "bg-primary text-primary-foreground cursor-pointer"
+                                            : "bg-card border text-muted-foreground cursor-not-allowed"
+                                    )}
+                                    onClick={handleSend}
+                                    disabled={!canSend}
+                                >
+                                    <ArrowUp className="h-5 w-5" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{canSend ? "Send message" : "Enter a message or attach files"}</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </div>
                 </div>
                 {(files.length > 0 || pastedContent.length > 0) && (
@@ -753,83 +861,84 @@ const ModelSelectorDropdown: React.FC<{
     const [isOpen, setIsOpen] = useState(false);
     const selectedModelData =
         models.find((m) => m.id === selectedModel) || models[0];
-    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    const handleModelSelect = (modelId: string) => {
+        onModelChange(modelId);
+        setIsOpen(false);
+    };
 
     return (
-        <div className="relative" ref={dropdownRef}>
-            <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 px-2.5 text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-700"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <img src={selectedModelData.icon} alt={selectedModelData.name} width={12} height={12} />
-                <span className="truncate max-w-[150px] sm:max-w-[200px]">
-                    {selectedModelData.name}
-                </span>
-                <ChevronDown
-                    className={cn(
-                        "ml-1 h-4 w-4 transition-transform",
-                        isOpen && "rotate-180"
-                    )}
-                />
-            </Button>
-
-            {isOpen && (
-                <div className="absolute bottom-full right-0 mb-2 w-72 bg-card border rounded-lg shadow-xl z-20 p-2">
-                    {models.map((model) => (
-                        <button
-                            key={model.id}
-                            className={cn(
-                                "w-full text-left p-2.5 rounded-md hover:bg-secondary transition-colors flex items-center justify-between",
-                                model.id === selectedModel && "bg-secondary"
-                            )}
-                            onClick={() => {
-                                onModelChange(model.id);
-                                setIsOpen(false);
-                            }}
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-2.5 text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-700"
                         >
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <img src={model.icon} alt={model.name} width={16} height={16} />
-                                    <span className="font-medium text-zinc-100">
-                                        {model.name}
+                            <img src={selectedModelData.icon} alt={selectedModelData.name} width={12} height={12} />
+                            <span className="truncate max-w-[150px] sm:max-w-[200px]">
+                                {selectedModelData.name}
+                            </span>
+                            <ChevronDown className={cn(
+                                "ml-1 h-4 w-4 transition-transform",
+                                isOpen && "rotate-180"
+                            )} />
+                        </Button>
+                    </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Select Model</p>
+                </TooltipContent>
+            </Tooltip>
+            <PopoverContent
+                className="w-72 p-2 bg-card border rounded-lg shadow-xl"
+                side="top"
+                align="end"
+                sideOffset={8}
+            >
+                {models.map((model) => (
+                    <button
+                        key={model.id}
+                        type="button"
+                        className={cn(
+                            "w-full text-left p-2.5 rounded-md hover:bg-secondary transition-colors flex items-center justify-between",
+                            model.id === selectedModel && "bg-secondary"
+                        )}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleModelSelect(model.id);
+                        }}
+                    >
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <img src={model.icon} alt={model.name} width={16} height={16} />
+                                <span className="font-medium text-zinc-100">
+                                    {model.name}
+                                </span>
+                                {model.badge && (
+                                    <span className="px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                                        {model.badge}
                                     </span>
-                                    {model.badge && (
-                                        <span className="px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
-                                            {model.badge}
-                                        </span>
-                                    )}
-                                </div>
-                                <p className="text-xs text-zinc-400 mt-0.5">
-                                    {model.description}
-                                </p>
+                                )}
                             </div>
-                            {model.id === selectedModel && (
-                                <Check className="h-4 w-4 text-blue-400 flex-shrink-0" />
-                            )}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
+                            <p className="text-xs text-zinc-400 mt-0.5">
+                                {model.description}
+                            </p>
+                        </div>
+                        {model.id === selectedModel && (
+                            <Check className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                        )}
+                    </button>
+                ))}
+            </PopoverContent>
+        </Popover>
     );
 };
 
-// Textual File Preview Component
 const TextualFilePreviewCard: React.FC<{
     file: FileWithPreview;
     onRemove: (id: string) => void;
@@ -853,12 +962,10 @@ const TextualFilePreviewCard: React.FC<{
                     </div>
                 )}
             </div>
-            {/* OVERLAY */}
             <div className="group absolute flex justify-start items-end p-2 inset-0 bg-card from-transparent overflow-hidden">
                 <p className="capitalize text-white text-xs bg-zinc-800 border border-zinc-700 px-2 py-1 rounded-md">
                     {fileExtension}
                 </p>
-                {/* Upload status indicator */}
                 {file.uploadStatus === "uploading" && (
                     <div className="absolute top-2 left-2">
                         <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-400" />

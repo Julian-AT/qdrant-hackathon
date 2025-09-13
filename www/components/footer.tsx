@@ -118,8 +118,8 @@ export const Footer = ({
                 </div>
                 <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
                     <p>{copyright}</p>
-                    <p>
-                        Engineered with ❤️ in Austria
+                    <p className="flex items-center gap-1">
+                        Engineered with ❤️ in Austria <img src="/austria.png" alt="Austria" width={16} height={16} className="mt-0.5" />
                     </p>
                 </div>
             </div>

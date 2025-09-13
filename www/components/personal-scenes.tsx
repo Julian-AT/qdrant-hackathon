@@ -9,10 +9,10 @@ import { Scene } from '@/lib/db/schema'
 import { SceneResult } from '@/lib/types'
 import { Skeleton } from './ui/skeleton'
 import { formatDistanceToNow } from 'date-fns'
+import CommunityScenes from './community-scenes'
 
-interface CommunityScenesProps {
+interface PersonalScenesProps {
     isMinified?: boolean
-    isHistory?: boolean
 }
 
 const SceneSkeleton = () => (
@@ -25,8 +25,8 @@ const SceneSkeleton = () => (
     </div>
 )
 
-const CommunityScenesSkeleton = ({ isMinified }: { isMinified: boolean }) => (
-    <div className={cn('container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10', isMinified && 'rounded-none rounded-b-xl')}>
+const PersonalScenesSkeleton = ({ isMinified }: { isMinified: boolean }) => (
+    <div className={cn('container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10 pb-12', isMinified && 'rounded-none rounded-t-xl')}>
         <div className='flex justify-between items-center mb-3'>
             <div className='flex flex-col gap-2 w-full'>
                 <Skeleton className='bg-secondary w-1/4 h-12' />
@@ -62,7 +62,7 @@ const FastImagePreview = ({
     );
 };
 
-const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
+const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
     const [isMounted, setIsMounted] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
     const [scenes, setScenes] = useState<(Scene & { latestMessagePart: any[] | null })[]>([])
@@ -79,9 +79,7 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
         setError(null)
 
         try {
-            const response = await fetch(`/api/public-scenes?page=${page}`)
-            console.log(response);
-
+            const response = await fetch(`/api/history`)
             if (!response.ok) {
                 throw new Error('Failed to load scenes')
             }
@@ -97,8 +95,6 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
 
             setHasMore(newScenes.length === 12) // Assuming 12 items per page
         } catch (err) {
-            console.log(err);
-
             setError(err instanceof Error ? err.message : 'Unknown error')
         } finally {
             setIsLoading(false)
@@ -125,51 +121,32 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
     }
 
     if (!isMounted) {
-        return <CommunityScenesSkeleton isMinified={isMinified} />
+        return <PersonalScenesSkeleton isMinified={isMinified} />
     }
 
     if (error || isLoading && scenes.length === 0) {
-        return <CommunityScenesSkeleton isMinified={isMinified} />
+        return <PersonalScenesSkeleton isMinified={isMinified} />
     }
 
     if (scenes.length === 0 && !isLoading) {
         return (
-            <div className={cn('container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10', isMinified && 'rounded-none rounded-b-xl')}>
-                <div className='flex justify-between items-center mb-3'>
-                    <div className='flex flex-col gap-2'>
-                        <h2 className='text-3xl font-semibold'>Community Scenes</h2>
-                        <span className='text-sm text-muted-foreground'>
-                            Explore scenes created by the community
-                        </span>
-                    </div>
-                </div>
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                        <PlusSignIcon className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">No public scenes yet</h3>
-                    <p className="text-muted-foreground mb-4">Be the first to share a scene with the community!</p>
-                    <Button asChild variant="outline">
-                        <Link href="/">Create Scene</Link>
-                    </Button>
-                </div>
-            </div>
+            <CommunityScenes />
         )
     }
 
     return (
-        <div className={cn('container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10 border border-red-500', isMinified && 'rounded-none rounded-b-xl')}>
+        <div className='container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10'>
             <div className='flex justify-between items-center mb-3'>
                 <div className='flex flex-col gap-2'>
                     <h2 className='text-3xl font-semibold'>
-                        Community Scenes
+                        Personal Scenes
                     </h2>
                     <span className='text-sm text-muted-foreground'>
-                        Explore scenes created by the community
+                        Explore scenes created by you
                     </span>
                 </div>
                 <Button variant='outline' className='cursor-pointer' asChild>
-                    <Link href='/community'>View All</Link>
+                    <Link href='/personal'>View All</Link>
                 </Button>
             </div>
 
@@ -220,7 +197,7 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
 
                 {isMinified && (
                     <Link
-                        href='/community'
+                        href='/personal'
                         className={cn(
                             'bg-background rounded-lg aspect-video border flex items-center justify-center gap-2 text-muted-foreground hover:border-secondary hover:text-primary transition-colors duration-200 group'
                         )}
@@ -290,9 +267,9 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
     )
 }
 
-const CommunityScenesComponent = CommunityScenes
+const PersonalScenesComponent = PersonalScenes
 
-export default dynamic(() => Promise.resolve(CommunityScenesComponent), {
+export default dynamic(() => Promise.resolve(PersonalScenesComponent), {
     ssr: false,
-    loading: () => <CommunityScenesSkeleton isMinified={false} />
+    loading: () => <PersonalScenesSkeleton isMinified={false} />
 })
