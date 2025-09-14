@@ -2,34 +2,34 @@
 
 A modular, production-ready vector search engine for IKEA products using Qdrant, CLIP, and OpenAI embeddings. Supports both text and image similarity search with a clean, extensible architecture.
 
-## 🚀 Features
+## Features
 
-- **Multi-modal Search**: Text-to-text, image-to-image, and text-to-image search
-- **Multiple Embedding Models**: CLIP for images and text, OpenAI for text
-- **Modular Architecture**: Clean separation of concerns with pluggable components
-- **Production Ready**: Comprehensive error handling, logging, and configuration
-- **CLI Interface**: Easy-to-use command-line interface
-- **Batch Processing**: Efficient processing of large datasets
-- **Qdrant Integration**: Full integration with Qdrant vector database
+- Text-to-text, image-to-image, and text-to-image search
+- CLIP for images and text, OpenAI for text
+- Clean separation of concerns with pluggable components
+- Comprehensive error handling, logging, and configuration
+- Command-line interface
+- Efficient processing of large datasets
+- Full integration with Qdrant vector database
 
-## 📁 Architecture
+## Architecture
 
 ```
 src/vector_search/
-├── core/                    # Core functionality
+├── core/                   # Core functionality
 │   ├── search_engine.py    # Main search engine
 │   ├── embedders.py        # CLIP and OpenAI embedders
 │   └── qdrant_client.py    # Qdrant operations
-├── data/                    # Data loading and processing
+├── data/                   # Data loading and processing
 │   └── product_loader.py   # Product data utilities
-├── utils/                   # Utilities
+├── utils/                  # Utilities
 │   ├── config.py           # Configuration management
 │   └── logger.py           # Logging setup
-└── cli/                     # Command-line interface
+└── cli/                    # Command-line interface
     └── main.py             # CLI entry point
 ```
 
-## 🛠️ Installation
+## Installation
 
 ### Using Poetry (Recommended)
 
@@ -53,29 +53,22 @@ For web scraping functionality:
 poetry install --extras scraping
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 Create a `.env` file in the project root:
 
 ```env
-# Required
 QDRANT_URL=http://localhost:6333
-
-# Optional
 QDRANT_API_KEY=your_qdrant_api_key
 OPENAI_API_KEY=your_openai_api_key
-
-# Collection names
 TEXT_COLLECTION=ikea_products
 IMAGE_COLLECTION=furniture_images
-
-# Processing settings
 BATCH_SIZE=32
 DEFAULT_LIMIT=10
 DEFAULT_THRESHOLD=0.7
 ```
 
-## 🎯 Usage
+## Usage
 
 ### CLI Interface
 
@@ -121,7 +114,7 @@ results = search_engine.search_by_text("modern sofa", "ikea_products")
 similar_images = search_engine.search_by_image("sofa.jpg", "furniture_images")
 ```
 
-## 📊 Commands
+## Commands
 
 ### Build Commands
 
@@ -191,7 +184,7 @@ List available Qdrant collections.
 poetry run vector-search list-collections
 ```
 
-## 🔧 Development
+## Development
 
 ### Project Structure
 
@@ -212,14 +205,14 @@ poetry run vector-search list-collections
 2. Update the CLI to support the new source
 3. Add appropriate validation
 
-## 📈 Performance
+## Performance
 
 - **Batch Processing**: Configurable batch sizes for optimal performance
 - **GPU Support**: Automatic GPU detection for CLIP models
 - **Memory Efficient**: Streaming data processing for large datasets
 - **Parallel Processing**: Concurrent embedding generation where possible
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -237,7 +230,7 @@ import logging
 logging.getLogger("vector_search").setLevel(logging.DEBUG)
 ```
 
-## 📝 Examples
+## Examples
 
 ### Complete Workflow
 
@@ -282,15 +275,3 @@ engine.build_image_embeddings(products, "furniture_images")
 text_results = engine.search_by_text("modern sofa", "ikea_products")
 image_results = engine.search_by_image("sofa.jpg", "furniture_images")
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
