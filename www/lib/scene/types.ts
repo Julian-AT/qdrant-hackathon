@@ -1,4 +1,4 @@
-import type { ChatMessage, SceneResult } from '@/lib/types';
+import type { ChatMessage, IkeaFurniture, SceneResult } from '@/lib/types';
 import React, { ReactNode } from 'react';
 
 export interface SceneGenerationConfig {
@@ -19,7 +19,7 @@ export interface SceneGenerationResult {
         processingTime: number;
         steps: string[];
         furnitureItemsFound: number;
-        ikeaProductsUsed: number;
+        ikeaProductsUsed: IkeaProduct[];
     };
 }
 
