@@ -46,7 +46,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     if (!chatModelFromCookie) {
         return (
             <>
-                <NoiseBackground />
                 <Chat
                     id={chat.id}
                     initialMessages={uiMessages}
