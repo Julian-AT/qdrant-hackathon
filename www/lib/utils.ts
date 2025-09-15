@@ -3,14 +3,14 @@ import type {
   CoreToolMessage,
   UIMessage,
   UIMessagePart,
-} from 'ai';
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import type { DBMessage } from '@/lib/db/schema';
-import { ChatSDKError, type ErrorCode } from '@/lib/errors';
-import type { ChatMessage, CustomUIDataTypes } from '@/lib/types';
-import { formatISO } from 'date-fns';
-import { friendlyWords } from 'friendlier-words';
+} from "ai";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import type { DBMessage } from "@/lib/db/schema";
+import { ChatSDKError, type ErrorCode } from "@/lib/errors";
+import type { ChatMessage, CustomUIDataTypes } from "@/lib/types";
+import { formatISO } from "date-fns";
+import { friendlyWords } from "friendlier-words";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -43,8 +43,8 @@ export async function fetchWithErrorHandlers(
 
     return response;
   } catch (error: unknown) {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      throw new ChatSDKError('offline:chat');
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      throw new ChatSDKError("offline:chat");
     }
 
     throw error;
@@ -52,16 +52,16 @@ export async function fetchWithErrorHandlers(
 }
 
 export function getLocalStorage(key: string) {
-  if (typeof window !== 'undefined') {
-    return JSON.parse(localStorage.getItem(key) || '[]');
+  if (typeof window !== "undefined") {
+    return JSON.parse(localStorage.getItem(key) || "[]");
   }
   return [];
 }
 
 export function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -71,17 +71,16 @@ export function generateShortUUID(): string {
 }
 
 export function generateFriendlyUUID(): string {
-  return friendlyWords() + '-' + generateShortUUID();
+  return friendlyWords() + "-" + generateShortUUID();
 }
 
 type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;
 type ResponseMessage = ResponseMessageWithoutId & { id: string };
 
 export function getMostRecentUserMessage(messages: Array<UIMessage>) {
-  const userMessages = messages.filter((message) => message.role === 'user');
+  const userMessages = messages.filter((message) => message.role === "user");
   return userMessages.at(-1);
 }
-
 
 export function getTrailingMessageId({
   messages,
@@ -96,13 +95,13 @@ export function getTrailingMessageId({
 }
 
 export function sanitizeText(text: string) {
-  return text.replace('<has_function_call>', '');
+  return text.replace("<has_function_call>", "");
 }
 
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
   return messages.map((message) => ({
     id: message.id,
-    role: message.role as 'user' | 'assistant' | 'system',
+    role: message.role as "user" | "assistant" | "system",
     parts: message.parts as UIMessagePart<CustomUIDataTypes, any>[],
     metadata: {
       createdAt: formatISO(message.createdAt),
@@ -112,9 +111,9 @@ export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
 
 export function getTextFromMessage(message: ChatMessage): string {
   return message.parts
-    .filter((part: any) => part.type === 'text')
+    .filter((part: any) => part.type === "text")
     .map((part: any) => part.text)
-    .join('');
+    .join("");
 }
 
 /**
@@ -127,13 +126,16 @@ export function getTextFromMessage(message: ChatMessage): string {
  * @param mimeType - The MIME type of the image (defaults to 'image/png')
  * @returns A blob URL that can be used as an image source
  */
-export const base64ToBlobUrl = (base64String: string, mimeType: string = 'image/png'): string => {
-  if (typeof base64String !== 'string' || !base64String) {
-    throw new Error('Base64 string is required and must be a non-empty string');
+export const base64ToBlobUrl = (
+  base64String: string,
+  mimeType: string = "image/png",
+): string => {
+  if (typeof base64String !== "string" || !base64String) {
+    throw new Error("Base64 string is required and must be a non-empty string");
   }
 
   // Remove data URL prefix if present
-  const base64Data = base64String.replace(/^data:image\/[a-z]+;base64,/, '');
+  const base64Data = base64String.replace(/^data:image\/[a-z]+;base64,/, "");
 
   try {
     const byteCharacters = atob(base64Data);
@@ -147,8 +149,8 @@ export const base64ToBlobUrl = (base64String: string, mimeType: string = 'image/
     const blob = new Blob([byteArray], { type: mimeType });
     return URL.createObjectURL(blob);
   } catch (error) {
-    console.error('Error converting base64 to blob URL:', error);
-    throw new Error('Invalid base64 string');
+    console.error("Error converting base64 to blob URL:", error);
+    throw new Error("Invalid base64 string");
   }
 };
 
@@ -159,16 +161,16 @@ export const base64ToBlobUrl = (base64String: string, mimeType: string = 'image/
  */
 export const isValidBase64Image = (str: unknown): boolean => {
   // Check if str is a string and not empty
-  if (typeof str !== 'string' || !str) return false;
+  if (typeof str !== "string" || !str) return false;
 
   // Check if it's a data URL
-  if (str.startsWith('data:image/')) {
+  if (str.startsWith("data:image/")) {
     return true;
   }
 
   // Check if it's a valid base64 string
   try {
-    const base64Data = str.replace(/^data:image\/[a-z]+;base64,/, '');
+    const base64Data = str.replace(/^data:image\/[a-z]+;base64,/, "");
     atob(base64Data);
     return true;
   } catch {
@@ -183,5 +185,5 @@ export const isValidBase64Image = (str: unknown): boolean => {
  */
 export const getMimeTypeFromBase64 = (base64String: string): string => {
   const match = base64String.match(/^data:([^;]+);base64,/);
-  return match ? match[1] : 'image/png';
+  return match ? match[1] : "image/png";
 };

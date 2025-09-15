@@ -1,46 +1,46 @@
-import { useState, useEffect } from 'react';
-import { useScrollToBottom } from './use-scroll-to-bottom';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import type { ChatMessage } from '@/lib/types';
+import { useState, useEffect } from "react";
+import { useScrollToBottom } from "./use-scroll-to-bottom";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ChatMessage } from "@/lib/types";
 
 export function useMessages({
-    sceneId,
-    status,
+  sceneId,
+  status,
 }: {
-    sceneId: string;
-    status: UseChatHelpers<ChatMessage>['status'];
+  sceneId: string;
+  status: UseChatHelpers<ChatMessage>["status"];
 }) {
-    const {
-        containerRef,
-        endRef,
-        isAtBottom,
-        scrollToBottom,
-        onViewportEnter,
-        onViewportLeave,
-    } = useScrollToBottom();
+  const {
+    containerRef,
+    endRef,
+    isAtBottom,
+    scrollToBottom,
+    onViewportEnter,
+    onViewportLeave,
+  } = useScrollToBottom();
 
-    const [hasSentMessage, setHasSentMessage] = useState(false);
+  const [hasSentMessage, setHasSentMessage] = useState(false);
 
-    useEffect(() => {
-        if (sceneId) {
-            scrollToBottom('instant');
-            setHasSentMessage(false);
-        }
-    }, [sceneId, scrollToBottom]);
+  useEffect(() => {
+    if (sceneId) {
+      scrollToBottom("instant");
+      setHasSentMessage(false);
+    }
+  }, [sceneId, scrollToBottom]);
 
-    useEffect(() => {
-        if (status === 'submitted') {
-            setHasSentMessage(true);
-        }
-    }, [status]);
+  useEffect(() => {
+    if (status === "submitted") {
+      setHasSentMessage(true);
+    }
+  }, [status]);
 
-    return {
-        containerRef,
-        endRef,
-        isAtBottom,
-        scrollToBottom,
-        onViewportEnter,
-        onViewportLeave,
-        hasSentMessage,
-    };
+  return {
+    containerRef,
+    endRef,
+    isAtBottom,
+    scrollToBottom,
+    onViewportEnter,
+    onViewportLeave,
+    hasSentMessage,
+  };
 }

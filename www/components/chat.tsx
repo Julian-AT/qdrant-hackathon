@@ -113,7 +113,7 @@ export function Chat({
 
   const { data: votes } = useSWR<Array<Vote>>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
-    fetcher
+    fetcher,
   );
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
@@ -146,7 +146,7 @@ export function Chat({
             className={cn(
               "relative items-center flex flex-col gap-2 px-3 mx-auto w-full bg-transparent md:pb-48 md:max-w-4xl z-[3] border-t-0 justify-center mt-32",
               messages.length > 0 &&
-              "absolute left-0 right-0 bottom-0 flex items-center md:pb-6 z-20"
+                "absolute left-0 right-0 bottom-0 flex items-center md:pb-6 z-20",
             )}
           >
             {messages.length === 0 && (
@@ -167,7 +167,7 @@ export function Chat({
                 </div>
               </>
             )}
-            {!isReadonly && status !== 'submitted' && (
+            {!isReadonly && status !== "submitted" && (
               <MultimodalInput
                 sceneId={id}
                 input={input}

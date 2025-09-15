@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -53,12 +53,12 @@
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.21 0.006 285.885);
   --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.21 0.006 285.885); 
+  --accent: oklch(0.21 0.006 285.885);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.637 0.237 25.331);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.246 0.009 285.69); 
-  --input: oklch(0.246 0.009 285.69); 
+  --border: oklch(0.246 0.009 285.69);
+  --input: oklch(0.246 0.009 285.69);
   --ring: oklch(0.442 0.017 285.786);
   --chart-1: oklch(0.585 0.233 277.117);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -77,11 +77,11 @@
 
 @theme inline {
   --font-sans:
-    var(--font-sans), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono:
     var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+    "Liberation Mono", "Courier New", monospace;
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -132,21 +132,55 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.03), 0 2px 2px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02);
-  --shadow-lg: 0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02), 0 16px 16px rgba(0, 0, 0, 0.02);
-  --shadow-xl: 0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02), 0 16px 16px rgba(0, 0, 0, 0.02), 0 32px 32px rgba(0, 0, 0, 0.02);
-  --shadow-2xl: 0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02), 0 16px 16px rgba(0, 0, 0, 0.02), 0 32px 32px rgba(0, 0, 0, 0.02), 0 64px 64px rgba(0, 0, 0, 0.02);
-  --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+  --shadow-sm:
+    0 1px 1px rgba(0, 0, 0, 0.03), 0 2px 2px rgba(0, 0, 0, 0.03), 0 2px 4px
+    rgba(0, 0, 0, 0.03);
+  --shadow-md:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px
+    rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02);
+  --shadow-lg:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(
+      0,
+      0,
+      0,
+      0.02
+    ), 0 8px 8px rgba(0, 0, 0, 0.02), 0 16px 16px rgba(0, 0, 0, 0.02);
+  --shadow-xl:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(
+      0,
+      0,
+      0,
+      0.02
+    ), 0 8px 8px rgba(0, 0, 0, 0.02), 0 16px 16px rgba(0, 0, 0, 0.02), 0 32px 32px rgba(
+      0,
+      0,
+      0,
+      0.02
+    );
+  --shadow-2xl:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(
+      0,
+      0,
+      0,
+      0.02
+    ), 0 8px 8px rgba(0, 0, 0, 0.02), 0 16px 16px rgba(0, 0, 0, 0.02), 0 32px 32px rgba(
+      0,
+      0,
+      0,
+      0.02
+    ), 0 64px 64px rgba(0, 0, 0, 0.02);
+  --animate-ripple: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s)
+    infinite;
   @keyframes ripple {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(1);
     }
-  50% {
-    transform: translate(-50%, -50%) scale(0.9);
+    50% {
+      transform: translate(-50%, -50%) scale(0.9);
     }
   }
-  
+
   --animate-fade-in-up: fade-in-up 1.5s ease-out forwards;
   @keyframes fade-in-up {
     0% {

@@ -1,53 +1,53 @@
-'use server';
+"use server";
 
-import { generateText, type UIMessage } from 'ai';
-import { cookies } from 'next/headers';
+import { generateText, type UIMessage } from "ai";
+import { cookies } from "next/headers";
 import {
-    deleteMessagesBySceneIdAfterTimestamp,
-    getMessageById,
-    updateSceneVisiblityById,
-} from '@/lib/db/queries';
-import type { VisibilityType } from '@/components/visibility-selector';
-import { myProvider } from '@/lib/ai/providers';
+  deleteMessagesBySceneIdAfterTimestamp,
+  getMessageById,
+  updateSceneVisiblityById,
+} from "@/lib/db/queries";
+import type { VisibilityType } from "@/components/visibility-selector";
+import { myProvider } from "@/lib/ai/providers";
 
 export async function saveChatModelAsCookie(model: string) {
-    const cookieStore = await cookies();
-    cookieStore.set('chat-model', model);
+  const cookieStore = await cookies();
+  cookieStore.set("chat-model", model);
 }
 
 export async function generateTitleFromUserMessage({
-    message,
+  message,
 }: {
-    message: UIMessage;
+  message: UIMessage;
 }) {
-    const { text: title } = await generateText({
-        model: myProvider.languageModel('title-model'),
-        system: `\n
+  const { text: title } = await generateText({
+    model: myProvider.languageModel("title-model"),
+    system: `\n
     - you will generate a short title based on the first message a user begins a conversation with
     - ensure it is not more than 80 characters long
     - the title should be a summary of the user's message
     - do not use quotes or colons`,
-        prompt: JSON.stringify(message),
-    });
+    prompt: JSON.stringify(message),
+  });
 
-    return title;
+  return title;
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {
-    const [message] = await getMessageById({ id });
+  const [message] = await getMessageById({ id });
 
-    await deleteMessagesBySceneIdAfterTimestamp({
-        sceneId: message.sceneId,
-        timestamp: message.createdAt,
-    });
+  await deleteMessagesBySceneIdAfterTimestamp({
+    sceneId: message.sceneId,
+    timestamp: message.createdAt,
+  });
 }
 
 export async function updateSceneVisibility({
-    sceneId,
-    visibility,
+  sceneId,
+  visibility,
 }: {
-    sceneId: string;
-    visibility: VisibilityType;
+  sceneId: string;
+  visibility: VisibilityType;
 }) {
-    await updateSceneVisiblityById({ sceneId, visibility });
+  await updateSceneVisiblityById({ sceneId, visibility });
 }

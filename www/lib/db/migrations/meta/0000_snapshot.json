@@ -52,12 +52,8 @@
           "name": "Message_v2_sceneId_Scene_id_fk",
           "tableFrom": "Message_v2",
           "tableTo": "Scene",
-          "columnsFrom": [
-            "sceneId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sceneId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -110,12 +106,8 @@
           "name": "Message_sceneId_Scene_id_fk",
           "tableFrom": "Message",
           "tableTo": "Scene",
-          "columnsFrom": [
-            "sceneId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sceneId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -169,12 +161,8 @@
           "name": "Scene_userId_User_id_fk",
           "tableFrom": "Scene",
           "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -215,12 +203,8 @@
           "name": "Stream_sceneId_Scene_id_fk",
           "tableFrom": "Stream",
           "tableTo": "Scene",
-          "columnsFrom": [
-            "sceneId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sceneId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -228,9 +212,7 @@
       "compositePrimaryKeys": {
         "Stream_id_pk": {
           "name": "Stream_id_pk",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -299,12 +281,8 @@
           "name": "Vote_v2_sceneId_Scene_id_fk",
           "tableFrom": "Vote_v2",
           "tableTo": "Scene",
-          "columnsFrom": [
-            "sceneId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sceneId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -312,12 +290,8 @@
           "name": "Vote_v2_messageId_Message_v2_id_fk",
           "tableFrom": "Vote_v2",
           "tableTo": "Message_v2",
-          "columnsFrom": [
-            "messageId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["messageId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -325,10 +299,7 @@
       "compositePrimaryKeys": {
         "Vote_v2_sceneId_messageId_pk": {
           "name": "Vote_v2_sceneId_messageId_pk",
-          "columns": [
-            "sceneId",
-            "messageId"
-          ]
+          "columns": ["sceneId", "messageId"]
         }
       },
       "uniqueConstraints": {},
@@ -365,12 +336,8 @@
           "name": "Vote_sceneId_Scene_id_fk",
           "tableFrom": "Vote",
           "tableTo": "Scene",
-          "columnsFrom": [
-            "sceneId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sceneId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -378,12 +345,8 @@
           "name": "Vote_messageId_Message_id_fk",
           "tableFrom": "Vote",
           "tableTo": "Message",
-          "columnsFrom": [
-            "messageId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["messageId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -391,10 +354,7 @@
       "compositePrimaryKeys": {
         "Vote_sceneId_messageId_pk": {
           "name": "Vote_sceneId_messageId_pk",
-          "columns": [
-            "sceneId",
-            "messageId"
-          ]
+          "columns": ["sceneId", "messageId"]
         }
       },
       "uniqueConstraints": {},
