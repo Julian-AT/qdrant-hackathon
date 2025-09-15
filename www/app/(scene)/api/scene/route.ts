@@ -139,7 +139,7 @@ export async function POST(request: Request) {
 
                         dataStream.write({
                             type: "data-sceneResult",
-                            data: result.scene,
+                            data: result,
                             transient: false,
                         });
 

@@ -13,19 +13,37 @@ export async function GET(request: Request) {
         ).toResponse();
     }
 
-    const publicScenes = await getPublicScenes({ page: parseInt(page), limit: 12 });
-
-    if (publicScenes.length === 0) {
+    const pageNumber = parseInt(page);
+    if (isNaN(pageNumber) || pageNumber < 0) {
         return new ChatSDKError(
-            'not_found:api',
-            'No public scenes found.',
+            'bad_request:api',
+            'Invalid page parameter. Must be a non-negative number.',
         ).toResponse();
     }
 
-    const hasMore = publicScenes.length === 12;
-    const nextPage = hasMore ? parseInt(page) + 1 : null;
-    const previousPage = parseInt(page) > 0 ? parseInt(page) - 1 : null;
+    try {
+        const publicScenes = await getPublicScenes({ page: pageNumber, limit: 12 });
 
+        const hasMore = publicScenes.length === 12;
+        const nextPage = hasMore ? pageNumber + 1 : null;
+        const previousPage = pageNumber > 0 ? pageNumber - 1 : null;
 
-    return Response.json({ publicScenes, hasMore, nextPage, previousPage } as { publicScenes: Scene[], hasMore: boolean, nextPage: number | null, previousPage: number | null }, { status: 200 });
+        return Response.json({
+            publicScenes,
+            hasMore,
+            nextPage,
+            previousPage
+        } as {
+            publicScenes: Scene[],
+            hasMore: boolean,
+            nextPage: number | null,
+            previousPage: number | null
+        }, { status: 200 });
+    } catch (error) {
+        console.error('Error fetching public scenes:', error);
+        return new ChatSDKError(
+            'bad_request:api',
+            'Failed to fetch public scenes.',
+        ).toResponse();
+    }
 }
