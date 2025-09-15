@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useEffect, useCallback } from "react";
+import React, { useMemo, useEffect, useCallback, useState } from "react";
 // @ts-ignore
 import { Pannellum } from "pannellum-react";
 import { SceneHeader } from "./scene-header";
@@ -8,7 +8,7 @@ import { useScene } from "@/hooks/use-scene";
 import { Conversation, ConversationContent } from "./conversation";
 import { useMessages } from "@/hooks/use-messages";
 import { UseChatHelpers } from "@ai-sdk/react";
-import { ChatMessage, SceneResult } from "@/lib/types";
+import { ChatMessage, IkeaFurniture, SceneResult } from "@/lib/types";
 import { Vote } from "@/lib/db/schema";
 import { base64ToBlobUrl, cn, isValidBase64Image } from "@/lib/utils";
 import { GenerationProgress } from "./generation-progress";
@@ -16,6 +16,8 @@ import { usePathname } from "next/navigation";
 import { AlertCircleIcon, GithubIcon, Home12Icon } from "hugeicons-react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
+import SceneControlls from "./scene-controlls";
+import { IkeaProduct, SceneGenerationResult } from "@/lib/scene";
 
 interface SceneProps {
   sceneId: string;
@@ -51,55 +53,53 @@ const Scene = ({
 
   const { scene } = useScene();
   const pathname = usePathname();
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [ikeaFurniture, setIkeaFurniture] = useState<IkeaProduct[]>([]);
 
   const allMessageParts = messages.flatMap((message) => message.parts);
-  const sceneResults: SceneResult[] = allMessageParts
+  const sceneResults: SceneGenerationResult[] = allMessageParts
     .filter((part) => part.type === "data-sceneResult")
-    .map((part) => part.data as SceneResult)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .map((part) => part.data as SceneGenerationResult)
+    .sort((a, b) => new Date(b.scene.createdAt).getTime() - new Date(a.scene.createdAt).getTime());
 
-
-  const imageUrl = useMemo(() => {
-    if (!sceneResults || sceneResults.length === 0) {
-      console.log("No scene image available");
-      return null;
-    }
-
-    try {
-      const latestSceneImage = sceneResults[0];
-
-      // If it's already a URL (R2), use it directly
-      if (latestSceneImage.image.startsWith('http://') || latestSceneImage.image.startsWith('https://')) {
-        console.log("Using R2 URL directly:", latestSceneImage.image.substring(0, 50) + "...");
-        return latestSceneImage.image;
+  useEffect(() => {
+    const processImage = async () => {
+      if (!sceneResults || sceneResults.length === 0) {
+        console.log("No scene image available");
+        setImageUrl(null);
+        return;
       }
 
-      // If it's base64, convert to blob URL for backward compatibility
-      if (isValidBase64Image(latestSceneImage.image)) {
-        const blobUrl = base64ToBlobUrl(latestSceneImage.image);
-        console.log(
-          "Successfully converted base64 image to blob URL:",
-          blobUrl.substring(0, 50) + "..."
-        );
-        return blobUrl;
+      try {
+        const latestSceneImage = sceneResults[0];
+        setIkeaFurniture(latestSceneImage.metadata.ikeaProductsUsed);
+
+        if (latestSceneImage.scene.image.startsWith('http://') || latestSceneImage.scene.image.startsWith('https://')) {
+          console.log("latestSceneImage.image", latestSceneImage.scene.image);
+          setImageUrl(latestSceneImage.scene.image);
+          return;
+        }
+
+        if (isValidBase64Image(latestSceneImage.scene.image)) {
+          const blobUrl = base64ToBlobUrl(latestSceneImage.scene.image);
+          console.log(
+            "Successfully converted base64 image to blob URL:",
+            blobUrl.substring(0, 50) + "..."
+          );
+          setImageUrl(blobUrl);
+          return;
+        }
+
+        console.error("Invalid image format:", latestSceneImage.scene.image.substring(0, 50));
+        setImageUrl(null);
+      } catch (error) {
+        console.error("Error processing image:", error);
+        setImageUrl(null);
       }
+    };
 
-      console.error("Invalid image format:", latestSceneImage.image.substring(0, 50));
-      return null;
-    } catch (error) {
-      console.error("Error processing image:", error);
-      return null;
-    }
-  }, [messages]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (imageUrl && imageUrl.startsWith("blob:")) {
-  //       console.log("revoking image url", imageUrl);
-  //       URL.revokeObjectURL(imageUrl);
-  //     }
-  //   };
-  // }, [imageUrl]);
+    processImage();
+  }, [sceneResults]);
 
   const handlePanoramaLoad = useCallback(() => {
     console.log("panorama loaded");
@@ -133,7 +133,6 @@ const Scene = ({
   });
 
   console.log("scene.ui", scene.ui);
-
 
   if ((scene.isLoading || scene.error) && !imageUrl) {
     return (
@@ -180,12 +179,16 @@ const Scene = ({
     );
   }
 
+  if (!imageUrl) {
+    return null;
+  }
+
   return (
     <div
       ref={messagesContainerRef}
       className="overflow-hidden absolute w-screen h-screen"
     >
-      test
+      <SceneControlls ikeaFurniture={ikeaFurniture} />
       <Conversation className="flex flex-col w-full h-full relative">
         <ConversationContent className="flex flex-col w-full h-full p-0">
           <Pannellum
@@ -206,6 +209,7 @@ const Scene = ({
             previewAuthor=""
             previewTitle=""
             hotspotDebug={false}
+            showControls={false}
             onLoad={handlePanoramaLoad}
             onError={handlePanoramaError}
             onErrorcleared={handlePanoramaErrorCleared}

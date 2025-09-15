@@ -29,7 +29,7 @@ export function DataStreamHandler() {
                         break;
 
                     case "data-sceneResult":
-                        const { id, title, prompt, image, isComplete } = delta.data;
+                        const { id, title, prompt, image, isComplete } = delta.data.scene;
                         if (isComplete && image) {
                             setSceneResult(image, prompt, title);
                         }

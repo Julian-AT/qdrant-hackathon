@@ -127,8 +127,8 @@ export function Chat({
 
   return (
     <>
-      <div className="relative flex flex-col min-w-0 h-full overflow-hidden max-w-dvw ">
-        {messages.length > 0 ? (
+      <div className="relative flex flex-col min-w-0 h-full overflow-hidden max-w-dvw">
+        {messages.length > 0 && (
           <Scene
             sceneId={id}
             status={status}
@@ -139,68 +139,68 @@ export function Chat({
             isReadonly={isReadonly}
             isArtifactVisible={false}
           />
-        ) : (
-          <>
-            <div
-              className={cn(
-                "relative items-center flex flex-col gap-2 px-3 mx-auto w-full bg-transparent md:pb-48 md:max-w-4xl z-[3] border-t-0 justify-center mt-32",
-                messages.length > 0 &&
-                "absolute left-0 right-0 bottom-0 flex items-center md:pb-6"
-              )}
-            >
-              {messages.length === 0 && (
-                <>
-                  <div className="container mx-auto mt-12 px-4 text-center mb-12">
-                    <HeroPill
-                      text="16k+ Ikea Products Qdrant DB"
-                      icon={<Home01Icon className="size-4" />}
-                      className="opacity-90"
-                    />
-                    <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-tight text-secondary-foreground">
-                      Generate your dream Home
-                    </h1>
-                    <p className="mx-auto max-w-2xl text-lg text-primary/75">
-                      Generate interactive and customizable 360° home scenes.
-                      Powered by Qdrant.
-                    </p>
-                  </div>
-                </>
-              )}
-              {!isReadonly && (
-                <MultimodalInput
-                  sceneId={id}
-                  input={input}
-                  setInput={setInput}
-                  status={status}
-                  stop={stop}
-                  attachments={attachments}
-                  setAttachments={setAttachments}
-                  messages={messages}
-                  setMessages={setMessages}
-                  sendMessage={sendMessage}
-                  selectedVisibilityType={visibilityType}
-                  selectedModelId={initialChatModel}
-                />
-              )}
-            </div>
+        )}
+
+        <>
+          <div
+            className={cn(
+              "relative items-center flex flex-col gap-2 px-3 mx-auto w-full bg-transparent md:pb-48 md:max-w-4xl z-[3] border-t-0 justify-center mt-32",
+              messages.length > 0 &&
+              "absolute left-0 right-0 bottom-0 flex items-center md:pb-6 z-20"
+            )}
+          >
             {messages.length === 0 && (
               <>
-                <div className="absolute inset-0 pointer-events-none max-h-dvh z-[1]">
-                  <div className="absolute left-1/2 -translate-x-1/2 -bottom-64 translate-y-1/2 animate-fade-in-up">
-                    <div className="w-[125rem] h-[125rem] rounded-full bg-gradient-to-t from-pink-500 to-sky-500/90 blur-[100px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-                    <div className="w-[100rem] h-[100rem] rounded-full bg-gradient-to-t from-purple-600 to-orange-500/90 blur-[70px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-                    <div className="w-[60rem] h-[60rem] rounded-full bg-gradient-to-t from-purple-700/40 to-pink-700 blur-[50px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-                    <div className="w-[45rem] h-[45rem] rounded-full bg-gradient-to-t from-purple-800/50 to-orange-800/50 blur-[30px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-                  </div>
-                </div>
-                <div className="relative z-[3] p-3">
-                  <PersonalScenes isMinified />
-                  <CommunityScenes isMinified />
+                <div className="container mx-auto mt-12 px-4 text-center mb-12">
+                  <HeroPill
+                    text="16k+ Ikea Products Qdrant DB"
+                    icon={<Home01Icon className="size-4" />}
+                    className="opacity-90"
+                  />
+                  <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-tight text-secondary-foreground">
+                    Generate your dream Home
+                  </h1>
+                  <p className="mx-auto max-w-2xl text-lg text-primary/75">
+                    Generate interactive and customizable 360° home scenes.
+                    Powered by Qdrant.
+                  </p>
                 </div>
               </>
             )}
-          </>
-        )}
+            {!isReadonly && status !== 'submitted' && (
+              <MultimodalInput
+                sceneId={id}
+                input={input}
+                setInput={setInput}
+                status={status}
+                stop={stop}
+                attachments={attachments}
+                setAttachments={setAttachments}
+                messages={messages}
+                setMessages={setMessages}
+                sendMessage={sendMessage}
+                selectedVisibilityType={visibilityType}
+                selectedModelId={initialChatModel}
+              />
+            )}
+          </div>
+          {messages.length === 0 && (
+            <>
+              <div className="absolute inset-0 pointer-events-none max-h-dvh z-[1]">
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-64 translate-y-1/2 animate-fade-in-up">
+                  <div className="w-[125rem] h-[125rem] rounded-full bg-gradient-to-t from-pink-500 to-sky-500/90 blur-[100px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
+                  <div className="w-[100rem] h-[100rem] rounded-full bg-gradient-to-t from-purple-600 to-orange-500/90 blur-[70px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
+                  <div className="w-[60rem] h-[60rem] rounded-full bg-gradient-to-t from-purple-700/40 to-pink-700 blur-[50px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
+                  <div className="w-[45rem] h-[45rem] rounded-full bg-gradient-to-t from-purple-800/50 to-orange-800/50 blur-[30px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
+                </div>
+              </div>
+              <div className="relative z-[3] p-3 flex flex-col gap-3">
+                <PersonalScenes isMinified />
+                <CommunityScenes isMinified />
+              </div>
+            </>
+          )}
+        </>
       </div>
     </>
   );

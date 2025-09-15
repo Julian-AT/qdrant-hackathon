@@ -129,6 +129,8 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
     }
 
     if (error || isLoading && scenes.length === 0) {
+        console.log(error);
+
         return <CommunityScenesSkeleton isMinified={isMinified} />
     }
 
@@ -158,7 +160,7 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
     }
 
     return (
-        <div className={cn('container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10 border border-red-500', isMinified && 'rounded-none rounded-b-xl')}>
+        <div className={cn('container mx-auto overflow-hidden rounded-xl bg-card px-5 py-3 z-10')}>
             <div className='flex justify-between items-center mb-3'>
                 <div className='flex flex-col gap-2'>
                     <h2 className='text-3xl font-semibold'>
@@ -168,14 +170,16 @@ const CommunityScenes = ({ isMinified = false }: CommunityScenesProps) => {
                         Explore scenes created by the community
                     </span>
                 </div>
-                <Button variant='outline' className='cursor-pointer' asChild>
-                    <Link href='/community'>View All</Link>
-                </Button>
+                {isMinified && (
+                    <Button variant='outline' className='cursor-pointer' asChild>
+                        <Link href='/community'>View All</Link>
+                    </Button>
+                )}
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3 my-3'>
                 {scenes.map((scene) => {
-                    if (!scene.latestMessagePart) {
+                    if (!scene.latestMessagePart || scene.latestMessagePart.length === 0) {
                         return null
                     }
 

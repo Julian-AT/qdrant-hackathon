@@ -604,54 +604,58 @@ function PureMultimodalInput({
                 </div>
             )}
 
-            <div className="bg-card border rounded-xl shadow-lg items-end gap-2 min-h-[150px] flex flex-col">
+            <div className={cn("bg-card border rounded-xl shadow-lg items-end gap-2 min-h-[150px] flex flex-col", messages.length > 0 && "min-h-[125px] max-h-[125px]")}>
                 <textarea
                     ref={textareaRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onPaste={handlePaste}
                     onKeyDown={handleKeyDown}
-                    placeholder=""
+                    placeholder={messages.length > 0 ? "Type your message..." : ""}
                     disabled={status !== 'ready'}
-                    className="flex-1 min-h-[100px] w-full p-4 focus-within:border-none focus:outline-none focus:border-none border-none outline-none focus-within:ring-0 focus-within:ring-offset-0 focus-within:outline-none max-h-[120px] resize-none border-0 bg-transparent text-zinc-100 shadow-none focus-visible:ring-0 placeholder:text-zinc-500 text-sm sm:text-base custom-scrollbar"
+                    className="flex-1 min-h-[75px] w-full p-4 focus-within:border-none focus:outline-none focus:border-none border-none outline-none focus-within:ring-0 focus-within:ring-offset-0 focus-within:outline-none max-h-[120px] resize-none border-0 bg-transparent text-zinc-100 shadow-none focus-visible:ring-0 placeholder:text-zinc-500 text-sm sm:text-base custom-scrollbar"
                     rows={1}
                 />
 
                 {/* Typing Animated Placeholder */}
-                <div className="absolute inset-0 flex items-start pt-4 pl-4 pointer-events-none">
-                    {!input && (
-                        <TypingPlaceholder
-                            key={`current-placeholder-${currentPlaceholder}`}
-                            text={PLACEHOLDER_MESSAGES[currentPlaceholder]}
-                            className="text-zinc-500 text-sm sm:text-base font-normal w-[calc(100%-2rem)]"
-                            duration={75}
-                            onComplete={handleTypingComplete}
-                        />
-                    )}
-                </div>
+                {messages.length === 0 && (
+                    <div className="absolute inset-0 flex items-start pt-4 pl-4 pointer-events-none">
+                        {!input && (
+                            <TypingPlaceholder
+                                key={`current-placeholder-${currentPlaceholder}`}
+                                text={PLACEHOLDER_MESSAGES[currentPlaceholder]}
+                                className="text-zinc-500 text-sm sm:text-base font-normal w-[calc(100%-2rem)]"
+                                duration={75}
+                                onComplete={handleTypingComplete}
+                            />
+                        )}
+                    </div>
+                )}
                 <div className="flex items-center gap-2 justify-between w-full px-3 pb-1.5">
                     <div className="flex items-center gap-2">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-9 w-9 p-0 text-zinc-400 hover:text-zinc-200 hover:bg-background flex-shrink-0"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={status !== 'ready' || files.length >= MAX_FILES}
-                                >
-                                    <Plus className="h-5 w-5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>
-                                    {files.length >= MAX_FILES
-                                        ? `Max ${MAX_FILES} files reached`
-                                        : "Attach files"
-                                    }
-                                </p>
-                            </TooltipContent>
-                        </Tooltip>
+                        {messages.length === 0 && (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-9 w-9 p-0 text-zinc-400 hover:text-zinc-200 hover:bg-background flex-shrink-0"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={status !== 'ready' || files.length >= MAX_FILES}
+                                    >
+                                        <Plus className="h-5 w-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>
+                                        {files.length >= MAX_FILES
+                                            ? `Max ${MAX_FILES} files reached`
+                                            : "Attach files"
+                                        }
+                                    </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
                         <PreferencesPopover
                             sceneId={sceneId}
                             selectedVisibilityType={selectedVisibilityType}
@@ -731,7 +735,7 @@ function PureMultimodalInput({
                     if (e.target) e.target.value = "";
                 }}
             />
-        </div>
+        </div >
     );
 }
 

@@ -85,7 +85,7 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
             }
 
             const data = await response.json()
-            const newScenes = (data.publicScenes || []) as (Scene & { latestMessagePart: any[] | null })[]
+            const newScenes = data.scenes
 
             if (page === 0) {
                 setScenes(newScenes)
@@ -95,6 +95,8 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
 
             setHasMore(newScenes.length === 12) // Assuming 12 items per page
         } catch (err) {
+            console.log(err);
+
             setError(err instanceof Error ? err.message : 'Unknown error')
         } finally {
             setIsLoading(false)
@@ -128,10 +130,11 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
         return <PersonalScenesSkeleton isMinified={isMinified} />
     }
 
+    console.log(scenes, isLoading);
+
+
     if (scenes.length === 0 && !isLoading) {
-        return (
-            <CommunityScenes />
-        )
+        return null;
     }
 
     return (
@@ -145,19 +148,28 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
                         Explore scenes created by you
                     </span>
                 </div>
-                <Button variant='outline' className='cursor-pointer' asChild>
-                    <Link href='/personal'>View All</Link>
-                </Button>
+                {isMinified && (
+                    <Button variant='outline' className='cursor-pointer' asChild>
+                        <Link href='/personal'>View All</Link>
+                    </Button>
+                )}
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3 my-3'>
                 {scenes.map((scene) => {
-                    if (!scene.latestMessagePart) {
+                    console.log(scene);
+                    const latestMessagePart = scene.latestMessagePart?.[0]
+
+                    if (!latestMessagePart || !latestMessagePart.data?.scene?.image || !latestMessagePart.data?.scene?.createdAt) {
                         return null
                     }
 
-                    const base64Image = scene.latestMessagePart[0].data.image
-                    const createdAt = scene.latestMessagePart[0].data.createdAt
+
+                    console.log(latestMessagePart.data.scene.image);
+
+
+                    const base64Image = latestMessagePart.data.scene.image
+                    const createdAt = latestMessagePart.data.scene.createdAt
 
                     if (!base64Image || !createdAt) {
                         return null
@@ -194,20 +206,6 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
                         </Link>
                     )
                 })}
-
-                {isMinified && (
-                    <Link
-                        href='/personal'
-                        className={cn(
-                            'bg-background rounded-lg aspect-video border flex items-center justify-center gap-2 text-muted-foreground hover:border-secondary hover:text-primary transition-colors duration-200 group'
-                        )}
-                    >
-                        <PlusSignIcon className='size-6 group-hover:scale-110 transition-transform duration-200' />
-                        <span className='text-lg'>
-                            Explore Scenes
-                        </span>
-                    </Link>
-                )}
             </div>
 
             {!isMinified && (
