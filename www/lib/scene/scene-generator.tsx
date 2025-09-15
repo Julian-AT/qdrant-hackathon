@@ -1,12 +1,14 @@
-import type { ChatMessage, SceneResult } from '@/lib/types';
+import type { ChatMessage, IkeaFurniture, SceneResult } from '@/lib/types';
 import { ImageService } from './image-service';
 import { IkeaService } from './ikea-service';
 import type {
     SceneGenerationConfig,
     SceneGenerationResult,
     ProgressCallback,
+    IkeaProduct,
 } from './types';
 import { SceneGenerationError } from './types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export class SceneGenerator {
     private imageService: ImageService;
@@ -32,7 +34,7 @@ export class SceneGenerator {
         const startTime = Date.now();
         const steps: string[] = [];
         let furnitureItemsFound = 0;
-        let ikeaProductsUsed = 0;
+        let ikeaProductsUsed: IkeaProduct[] = [];
 
         try {
             onProgress?.(10, 'Getting things ready...');
@@ -62,10 +64,14 @@ export class SceneGenerator {
                     onProgress?.(30, 'Analyzing furniture in the image...');
                     steps.push('Started IKEA furniture integration');
 
-                    onProgress?.(45, 'Detecting objects in the scene...');
+                    onProgress?.(45, 'Detecting objects in the scene...',
+                        <Skeleton className="w-full aspect-video rounded-xl bg-secondary" />
+                    );
                     const segmentationResult = await this.imageService.segmentImage(tempImageUrl);
                     console.log(segmentationResult);
-
+                    onProgress?.(45, 'Detecting objects in the scene...',
+                        <img src={segmentationResult.img as string} alt="Segmentation Result" width={100} height={100} />
+                    );
 
                     furnitureItemsFound = segmentationResult['<OD>'].bboxes.length;
                     steps.push(`Detected ${furnitureItemsFound} objects in the scene`);
@@ -102,7 +108,7 @@ export class SceneGenerator {
                                 processingTime: Date.now() - startTime,
                                 steps,
                                 furnitureItemsFound: 0,
-                                ikeaProductsUsed: 0,
+                                ikeaProductsUsed: [],
                             },
                         };
                     }
@@ -147,22 +153,22 @@ export class SceneGenerator {
                                 processingTime: Date.now() - startTime,
                                 steps,
                                 furnitureItemsFound,
-                                ikeaProductsUsed: 0,
+                                ikeaProductsUsed: []
                             },
                         };
                     }
 
                     onProgress?.(75, 'Searching for matching IKEA products...');
                     const ikeaProducts = await this.ikeaService.searchIkeaProducts(filteredSegments);
-                    ikeaProductsUsed = ikeaProducts.filter(product => product !== null).length;
-                    steps.push(`Found ${ikeaProductsUsed} matching IKEA products`);
+                    ikeaProductsUsed = ikeaProducts;
+                    steps.push(`Found ${ikeaProducts.length} matching IKEA products`);
 
 
                     onProgress?.(85, `Integrating ${ikeaProductsUsed} IKEA products into scene...`);
                     finalImageUrl = await this.imageService.injectIkeaProducts(baseImageUrl, ikeaProducts);
                     steps.push('IKEA products integrated into scene');
 
-                    if (ikeaProductsUsed > 0) {
+                    if (ikeaProducts.length > 0) {
                         steps.push(`Successfully integrated ${ikeaProductsUsed} IKEA products`);
                         console.log('IKEA products found:', ikeaProducts.filter(p => p !== null).map(p => p?.name));
                     } else {
@@ -218,7 +224,7 @@ export class SceneGenerator {
                     processingTime,
                     steps,
                     furnitureItemsFound,
-                    ikeaProductsUsed,
+                    ikeaProductsUsed: ikeaProductsUsed.filter(product => product !== null)
                 },
             };
 
