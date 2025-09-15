@@ -138,7 +138,13 @@ export async function getScenesByUserId({
 
         const query = (whereCondition?: SQL<any>) =>
             db
-                .select()
+                .select({
+                    id: scene.id,
+                    title: scene.title,
+                    visibility: scene.visibility,
+                    createdAt: scene.createdAt,
+                    userId: scene.userId,
+                })
                 .from(scene)
                 .where(
                     whereCondition
@@ -148,7 +154,7 @@ export async function getScenesByUserId({
                 .orderBy(desc(scene.createdAt))
                 .limit(extendedLimit);
 
-        let filteredScenes: Array<Scene> = [];
+        let filteredScenes: any[] = [];
 
         if (startingAfter) {
             const [selectedScene] = await db
@@ -185,9 +191,28 @@ export async function getScenesByUserId({
         }
 
         const hasMore = filteredScenes.length > limit;
+        const scenesToReturn = hasMore ? filteredScenes.slice(0, limit) : filteredScenes;
+
+        const scenesWithLatestMessage = await Promise.all(
+            scenesToReturn.map(async (sceneData) => {
+                const [latestMessage] = await db
+                    .select({
+                        parts: message.parts
+                    })
+                    .from(message)
+                    .where(eq(message.sceneId, sceneData.id))
+                    .orderBy(desc(message.createdAt))
+                    .limit(1);
+
+                return {
+                    ...sceneData,
+                    latestMessagePart: latestMessage?.parts || null
+                };
+            })
+        );
 
         return {
-            scenes: hasMore ? filteredScenes.slice(0, limit) : filteredScenes,
+            scenes: scenesWithLatestMessage,
             hasMore,
         };
     } catch (error) {
@@ -289,24 +314,90 @@ export async function getMessageById({ id }: { id: string }) {
     }
 }
 
+function isValidImageData(imageData: any): boolean {
+    if (!imageData || typeof imageData !== 'string') {
+        return false;
+    }
+
+    const trimmed = imageData.trim();
+    if (trimmed === '' || trimmed === '""' || trimmed === "''") {
+        return false;
+    }
+
+    if (trimmed.startsWith('data:image/')) {
+        const base64Data = trimmed.split(',')[1];
+        if (!base64Data || base64Data.trim() === '') {
+            return false;
+        }
+        try {
+            atob(base64Data);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    if (trimmed.startsWith('https://pub-') && trimmed.includes('.r2.dev')) {
+        return true;
+    }
+
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return true;
+    }
+
+    return false;
+}
+
+function hasValidImage(parts: any[]): boolean {
+    if (!Array.isArray(parts) || parts.length === 0) {
+        return false;
+    }
+
+    const firstPart = parts[0];
+    if (!firstPart || typeof firstPart !== 'object') {
+        return false;
+    }
+
+    if (firstPart.type === 'data-sceneResult' && firstPart.data?.image) {
+        return isValidImageData(firstPart.data.image);
+    }
+
+    if (firstPart.type === 'file' && firstPart.url) {
+        return isValidImageData(firstPart.url);
+    }
+
+    return false;
+}
+
 export async function getPublicScenes({ page, limit }: { page: number, limit: number }) {
     try {
-        const scenes = await db
-            .select({
-                id: scene.id,
-                title: scene.title,
-                visibility: scene.visibility,
-                createdAt: scene.createdAt,
-                userId: scene.userId,
-            })
-            .from(scene)
-            .where(eq(scene.visibility, 'private'))
-            .orderBy(desc(scene.createdAt))
-            .offset(page * limit)
-            .limit(limit);
+        const offset = page * limit;
+        const batchSize = limit * 3;
+        let validScenes: any[] = [];
+        let currentOffset = offset;
 
-        const scenesWithMessages = await Promise.all(
-            scenes.map(async (sceneData) => {
+        while (validScenes.length < limit) {
+            const scenes = await db
+                .select({
+                    id: scene.id,
+                    title: scene.title,
+                    visibility: scene.visibility,
+                    createdAt: scene.createdAt,
+                    userId: scene.userId,
+                })
+                .from(scene)
+                .where(eq(scene.visibility, 'public'))
+                .orderBy(desc(scene.createdAt))
+                .offset(currentOffset)
+                .limit(batchSize);
+
+            if (scenes.length === 0) {
+                break;
+            }
+
+            for (const sceneData of scenes) {
+                if (validScenes.length >= limit) break;
+
                 const [latestMessage] = await db
                     .select({
                         parts: message.parts
@@ -316,14 +407,24 @@ export async function getPublicScenes({ page, limit }: { page: number, limit: nu
                     .orderBy(desc(message.createdAt))
                     .limit(1);
 
-                return {
-                    ...sceneData,
-                    latestMessagePart: latestMessage?.parts || null
-                };
-            })
-        );
+                if (!latestMessage?.parts || !Array.isArray(latestMessage.parts) || !hasValidImage(latestMessage.parts)) {
+                    continue;
+                }
 
-        return scenesWithMessages;
+                validScenes.push({
+                    ...sceneData,
+                    latestMessagePart: latestMessage.parts
+                });
+            }
+
+            if (scenes.length < batchSize) {
+                break;
+            }
+
+            currentOffset += batchSize;
+        }
+
+        return validScenes;
     } catch (error) {
         console.log(error);
 
