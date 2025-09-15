@@ -153,20 +153,18 @@ export class IkeaService {
           }
         ) as any;
 
-
-
-        const embedding = output as number[];
+        const embedding = output.embedding as number[];
         const ikeaProduct = await this.qdrant.search(this.collectionName, {
           vector: embedding,
           limit: 1,
         });
 
-        console.log(ikeaProduct);
-
         return ikeaProduct[0];
       });
 
       const ikeaProducts = await Promise.all(ikeaProductsPromises);
+      console.log(ikeaProducts);
+
       return ikeaProducts as unknown as IkeaProduct[];
     } catch (error) {
       console.log(error);

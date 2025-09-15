@@ -7,6 +7,7 @@ import { ImageGenerationError } from "./types";
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
+import sharp from "sharp";
 
 interface ReplicateResult {
   url: () => string;
@@ -16,7 +17,8 @@ export interface SegmentationResult {
   '<OD>': {
     bboxes: number[][];
     labels: string[];
-  };
+  },
+  img: ReadableStream | string;
 }
 
 export class ImageService {
@@ -149,6 +151,46 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
     }
   }
 
+  async drawBoundingBoxes(imageBuffer: Buffer, segmentationResult: SegmentationResult): Promise<Buffer> {
+    const image = sharp(imageBuffer);
+    const { width, height } = await image.metadata();
+
+    if (!width || !height) {
+      throw new Error("Could not get image dimensions");
+    }
+
+    const bboxes = segmentationResult['<OD>'].bboxes;
+    const labels = segmentationResult['<OD>'].labels;
+
+    const svgElements: string[] = [];
+
+    for (let i = 0; i < bboxes.length; i++) {
+      const [x1, y1, x2, y2] = bboxes[i];
+      const label = labels[i];
+
+      const rectWidth = x2 - x1;
+      const rectHeight = y2 - y1;
+
+      svgElements.push(`
+        <rect x="${x1}" y="${y1}" width="${rectWidth}" height="${rectHeight}" 
+              fill="none" stroke="red" stroke-width="2"/>
+        <text x="${x1}" y="${y1 - 5}" font-family="Arial" font-size="14" fill="red">${label}</text>
+      `);
+    }
+
+    const svg = `
+      <svg width="${width}" height="${height}">
+        ${svgElements.join('')}
+      </svg>
+    `;
+
+    const resultImage = await image
+      .composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
+      .toBuffer();
+
+    return resultImage;
+  }
+
   async segmentImage(
     imageUrl: string,
   ): Promise<SegmentationResult> {
@@ -171,7 +213,30 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
 
       const resultJSON = result.text.replace(/'/g, '"')
       const segmentationResult = JSON.parse(resultJSON) as SegmentationResult;
-      return segmentationResult;
+
+      if (typeof segmentationResult.img === 'string') {
+        return {
+          ...segmentationResult,
+          img: ""
+        };
+      }
+
+      // const chunks: Uint8Array[] = [];
+      // const reader = segmentationResult.img.getReader();
+
+      // while (true) {
+      //   const { done, value } = await reader.read();
+      //   if (done) break;
+      //   chunks.push(value);
+      // }
+
+      // const imageBuffer = Buffer.concat(chunks);
+      // const image = imageBuffer.toString('utf8');
+
+      return {
+        ...segmentationResult,
+        img: "",
+      };
     } catch (error) {
       console.log(error);
       throw new ImageGenerationError(
@@ -322,9 +387,9 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
       });
 
       await this.s3Client.send(command);
-      const signedUrl = await this.getSignedUrl(key);
+      const publicUrl = await this.getPublicUrl(key);
 
-      return { url: signedUrl, key };
+      return { url: publicUrl, key };
     } catch (error) {
       throw new ImageGenerationError(
         "Failed to upload image to R2",
@@ -348,6 +413,10 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
         error as Error
       );
     }
+  }
+
+  private async getPublicUrl(key: string): Promise<string> {
+    return `${this.publicUrl}/${key}`;
   }
 
   private generateImageKey(folder: string, contentType: string): string {
