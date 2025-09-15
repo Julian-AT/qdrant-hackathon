@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { InferUITool, UIMessage } from 'ai';
 import { ReactNode } from 'react';
+import { SceneGenerationResult } from './scene';
 
 export type DataPart = { type: 'append-message'; message: string };
 
@@ -19,13 +20,7 @@ export type CustomUIDataTypes = {
         isComplete?: boolean;
         ui?: ReactNode;
     };
-    sceneResult: {
-        id: string;
-        title?: string;
-        prompt?: string;
-        image: string;
-        isComplete: boolean;
-    };
+    sceneResult: SceneGenerationResult
     sceneError: {
         message: string;
         code?: string;
