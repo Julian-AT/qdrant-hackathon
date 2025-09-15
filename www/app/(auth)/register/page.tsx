@@ -24,7 +24,8 @@ export default function Page() {
         },
     );
 
-    const { update: updateSession } = useSession();
+    const session = useSession();
+    const updateSession = session?.update;
 
     useEffect(() => {
         if (state.status === 'user_exists') {
