@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState, useMemo, memo } from "react";
-// @ts-expect-error
+// @ts-ignore
 import { Pannellum } from "pannellum-react";
 import { useScene } from "@/hooks/use-scene";
 import { Conversation, ConversationContent } from "./conversation";
@@ -18,6 +18,7 @@ import { buttonVariants } from "./ui/button";
 import SceneControlls from "./scene-controlls";
 import type { IkeaProduct, SceneGenerationResult } from "@/lib/scene";
 import { Session } from "next-auth";
+import { Hotspot } from "@/lib/scene/types";
 
 interface SceneProps {
   sceneId: string;
@@ -55,6 +56,8 @@ const Scene = memo(({
     status,
   });
 
+  const [hotspots, setHotspots] = useState<Hotspot[]>([]);
+  const [showHotspots, setShowHotspots] = useState(false);
   const { scene } = useScene();
   const pathname = usePathname();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -136,21 +139,28 @@ const Scene = memo(({
   }, []);
 
   const shouldRenderScene = useMemo(() => {
-    return typeof window !== "undefined" && pathname.startsWith("/scene/");
+    return typeof window !== "undefined"
   }, [pathname]);
 
   const shouldShowLoading = useMemo(() => {
-    return (scene.isLoading || scene.error) || !imageUrl;
+    return (scene.error) || !imageUrl;
   }, [scene.isLoading, scene.error, imageUrl]);
 
   const shouldShowNoImage = useMemo(() => {
     return !imageUrl && !scene.isLoading;
   }, [imageUrl, scene.isLoading]);
 
+  useEffect(() => {
+    setHotspots(sceneResults?.[0]?.metadata?.hotspots || []);
+  }, [sceneResults]);
+
   if (!shouldRenderScene) {
-    console.log("window is undefined or pathname does not start with /scene/");
+    console.log("window is undefined or pathname does not start with /scene/", pathname, window);
     return null;
   }
+
+  console.log(scene, imageUrl);
+
 
   if (!scene || scene.id === "init" && !imageUrl) return null;
 
@@ -166,6 +176,7 @@ const Scene = memo(({
       </div>
     );
   }
+
 
   if (shouldShowNoImage) {
     return (
@@ -203,15 +214,17 @@ const Scene = memo(({
     return null;
   }
 
+
   return (
     <div
       ref={messagesContainerRef}
       className="overflow-hidden absolute w-screen h-screen"
     >
-      <SceneControlls ikeaFurniture={ikeaFurniture} messages={messages} session={session} />
+      <SceneControlls ikeaFurniture={ikeaFurniture} messages={messages} session={session} showHotspots={showHotspots} setShowHotspots={setShowHotspots} />
       <Conversation className="flex flex-col w-full h-full relative">
         <ConversationContent className="flex flex-col w-full h-full p-0">
           <Pannellum
+            key={`pannellum-${showHotspots}`}
             width="100%"
             height="100%"
             image={imageUrl}
@@ -221,7 +234,6 @@ const Scene = memo(({
             maxHfov={128}
             minHfov={64}
             autoLoad
-            orientationOnByDefault={false}
             draggable
             keyboardZoom
             mouseZoom
@@ -233,7 +245,21 @@ const Scene = memo(({
             onLoad={handlePanoramaLoad}
             onError={handlePanoramaError}
             onErrorcleared={handlePanoramaErrorCleared}
-          />
+          >
+            {hotspots.map((hotspot, index) => {
+              if (!showHotspots) return <></>;
+
+              return (
+                <Pannellum.HotSpot
+                  pitch={hotspot.pitch}
+                  yaw={hotspot.yaw}
+                  text={hotspot.text}
+                  URL={hotspot.URL}
+                  type={"custom"}
+                />
+              )
+            })}
+          </Pannellum>
         </ConversationContent>
       </Conversation>
     </div>

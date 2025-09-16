@@ -7,9 +7,12 @@ import type {
   SceneGenerationResult,
   ProgressCallback,
   IkeaProduct,
+  Hotspot,
 } from "./types";
 import { SceneGenerationError } from "./types";
 import { Skeleton } from "@/components/ui/skeleton";
+
+
 
 export class SceneGenerator {
   private imageService: ImageService;
@@ -36,6 +39,7 @@ export class SceneGenerator {
     const steps: string[] = [];
     let furnitureItemsFound = 0;
     let ikeaProductsUsed: IkeaProduct[] = [];
+    let hotspots: Hotspot[] = [];
 
     try {
       onProgress?.(10, "Getting things ready...");
@@ -128,6 +132,7 @@ export class SceneGenerator {
                 steps,
                 furnitureItemsFound: 0,
                 ikeaProductsUsed: [],
+                hotspots,
               },
             };
           }
@@ -147,6 +152,14 @@ export class SceneGenerator {
           steps.push(
             `Filtered to ${filteredSegments.length} IKEA-compatible furniture items`,
           );
+
+          hotspots = segments.map((segment) => ({
+            type: segment.label,
+            pitch: -((segment.bbox[1] + segment.bbox[3]) / 2 - 360) * (180 / 720),
+            yaw: ((segment.bbox[0] + segment.bbox[2]) / 2 - 720) * (360 / 1440),
+            text: segment.label,
+            URL: "",
+          }));
 
           if (filteredSegments.length === 0) {
             steps.push("No IKEA-compatible furniture found, using base image");
@@ -187,6 +200,7 @@ export class SceneGenerator {
                 steps,
                 furnitureItemsFound,
                 ikeaProductsUsed: [],
+                hotspots
               },
             };
           }
@@ -199,7 +213,7 @@ export class SceneGenerator {
 
           onProgress?.(
             85,
-            `Integrating ${ikeaProductsUsed.map((p) => p?.name).join(", ")} into scene...`,
+            `Integrating ${ikeaProductsUsed.length} IKEA products into scene...`,
           );
           finalImageUrl = await this.imageService.injectIkeaProducts(
             baseImageUrl,
@@ -272,6 +286,7 @@ export class SceneGenerator {
           ikeaProductsUsed: ikeaProductsUsed.filter(
             (product) => product !== null,
           ),
+          hotspots,
         },
       };
     } catch (error) {
