@@ -24,11 +24,7 @@ Describe your ideal room in plain English, generate an interactive 360° panoram
 
 Built for the Qdrant Hackathon, the project demonstrates how visual vector search can bridge AI-generated imagery and real shopping experiences.
 
-<iframe width="1120" height="630"
-src="https://youtu.be/KeBSnjSEXNc" 
-frameborder="0" 
-allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-allowfullscreen></iframe>
+<video src="./assets/interiorly-showcase.mp4" controls preload></video>
 
 ## How It Works
 
