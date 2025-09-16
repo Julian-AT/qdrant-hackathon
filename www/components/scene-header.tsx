@@ -2,7 +2,6 @@
 
 
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion, useAnimation } from "motion/react";
 import Link from "next/link";
 
 export function SceneHeader() {

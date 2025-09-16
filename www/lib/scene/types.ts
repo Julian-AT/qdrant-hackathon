@@ -1,5 +1,5 @@
-import type { ChatMessage, IkeaFurniture, SceneResult } from "@/lib/types";
-import React, { ReactNode } from "react";
+import type { SceneResult } from "@/lib/types";
+import type { ReactNode } from "react";
 
 export interface SceneGenerationConfig {
   includeIkeaFurniture: boolean;

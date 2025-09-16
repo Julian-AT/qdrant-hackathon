@@ -1,5 +1,5 @@
 import { getPublicScenes } from "@/lib/db/queries";
-import { Scene } from "@/lib/db/schema";
+import type { Scene } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
 
 export async function GET(request: Request) {
@@ -13,8 +13,8 @@ export async function GET(request: Request) {
     ).toResponse();
   }
 
-  const pageNumber = parseInt(page);
-  if (isNaN(pageNumber) || pageNumber < 0) {
+  const pageNumber = parseInt(page, 10);
+  if (Number.isNaN(pageNumber) || pageNumber < 0) {
     return new ChatSDKError(
       "bad_request:api",
       "Invalid page parameter. Must be a non-negative number.",

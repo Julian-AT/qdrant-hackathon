@@ -1,10 +1,10 @@
 "use client"
 
-import { GithubIcon, Linkedin01Icon, Linkedin02Icon } from "hugeicons-react";
+import { GithubIcon, Linkedin02Icon } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import type React from "react";
 
 interface FooterProps {
     logo?: {

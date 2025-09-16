@@ -1,7 +1,6 @@
 "use client";
 
 import { NavMenu } from "@/components/nav-menu";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { GithubIcon } from "hugeicons-react";
 import { Menu, X } from "lucide-react";
@@ -11,8 +10,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const INITIAL_WIDTH = "95rem";
-const MAX_WIDTH = "85rem";
+const _INITIAL_WIDTH = "95rem";
+const _MAX_WIDTH = "85rem";
 
 // Animation variants
 const overlayVariants = {
@@ -21,7 +20,7 @@ const overlayVariants = {
   exit: { opacity: 0 },
 };
 
-const drawerVariants = {
+const _drawerVariants = {
   hidden: { opacity: 0, y: 100 },
   visible: {
     opacity: 1,
@@ -46,7 +45,7 @@ const drawerMenuContainerVariants = {
   visible: { opacity: 1 },
 };
 
-const drawerMenuVariants = {
+const _drawerMenuVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
 };

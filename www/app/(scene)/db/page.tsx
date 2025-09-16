@@ -1,4 +1,4 @@
-import React from "react";
+
 import { VectorVisualization } from "@/components/vector-visualization";
 
 const Page = () => {

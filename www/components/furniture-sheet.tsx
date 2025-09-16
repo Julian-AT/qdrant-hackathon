@@ -1,4 +1,4 @@
-import React from 'react'
+
 import {
     Sheet,
     SheetContent,
@@ -8,8 +8,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from './ui/button'
-import { AlertCircleIcon, Home08Icon, Home12Icon, Share08Icon, Sofa01Icon, StarIcon } from 'hugeicons-react'
-import { IkeaFurniture } from '@/lib/types'
+import { AlertCircleIcon, Home12Icon, StarIcon } from 'hugeicons-react'
 
 interface FurnitureSheetProps {
     ikeaFurniture: any[]

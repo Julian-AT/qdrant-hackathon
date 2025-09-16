@@ -1,4 +1,4 @@
-import type { ChatMessage } from "@/lib/types";
+import type { ChatMessage, SceneResult } from "@/lib/types";
 import Image from "next/image";
 import { ImageService } from "./image-service";
 import { IkeaService } from "./ikea-service";
@@ -271,7 +271,7 @@ export class SceneGenerator {
       return {
         scene,
         metadata: {
-          processingTime,
+          processingTime: Date.now() - startTime,
           steps,
           furnitureItemsFound,
           ikeaProductsUsed: ikeaProductsUsed.filter(

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import type React from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stats } from '@react-three/drei';
 import * as THREE from 'three';
@@ -68,7 +69,7 @@ const InteractiveParticleSystem: React.FC<{
                 return;
             }
 
-            const vector = point.vector || [];
+            const _vector = point.vector || [];
             const radius = 69 + Math.random() * 25;
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
@@ -433,7 +434,7 @@ export const VectorVisualization: React.FC<VectorVisualizationProps> = ({
 
     useEffect(() => {
         fetchPoints();
-    }, [collectionName, maxPoints]);
+    }, [fetchPoints]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {

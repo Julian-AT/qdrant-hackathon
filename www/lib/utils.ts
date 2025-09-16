@@ -71,7 +71,7 @@ export function generateShortUUID(): string {
 }
 
 export function generateFriendlyUUID(): string {
-  return friendlyWords() + "-" + generateShortUUID();
+  return `${friendlyWords()}-${generateShortUUID()}`;
 }
 
 type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;
@@ -102,7 +102,7 @@ export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
   return messages.map((message) => ({
     id: message.id,
     role: message.role as "user" | "assistant" | "system",
-    parts: message.parts as UIMessagePart<CustomUIDataTypes, unknown>[],
+    parts: message.parts as UIMessagePart<CustomUIDataTypes, any>[],
     metadata: {
       createdAt: formatISO(message.createdAt),
     },

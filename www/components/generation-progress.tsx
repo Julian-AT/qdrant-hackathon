@@ -4,11 +4,10 @@ import {
   AlertCircleIcon,
   GithubIcon,
   Home12Icon,
-  Sad01Icon,
 } from "hugeicons-react";
 import { LoaderIcon } from "lucide-react";
-import React, { ReactNode, useEffect, useState } from "react";
-import { Button, buttonVariants } from "./ui/button";
+import { type ReactNode, useEffect, useState } from "react";
+import { buttonVariants } from "./ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

@@ -1,10 +1,9 @@
-import { ArrowDown01Icon, Home12Icon, Share08Icon } from 'hugeicons-react'
+import { ArrowDown01Icon, } from 'hugeicons-react'
 import Link from 'next/link'
-import React from 'react'
 import { Button } from './ui/button'
 import FurnitureSheet from './furniture-sheet'
 import Image from 'next/image'
-import { IkeaProduct } from '@/lib/scene'
+import type { IkeaProduct } from '@/lib/scene'
 
 interface SceneControllsProps {
     ikeaFurniture: IkeaProduct[]

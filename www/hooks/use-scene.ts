@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useCallback, useMemo } from "react";
+import { type ReactNode, useCallback, useMemo } from "react";
 import useSWR from "swr";
 
 export interface SceneData {

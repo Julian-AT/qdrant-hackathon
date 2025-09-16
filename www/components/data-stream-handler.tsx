@@ -21,25 +21,28 @@ export function DataStreamHandler() {
 
             try {
                 switch (delta.type) {
-                    case "data-sceneProgress":
+                    case "data-sceneProgress": {
                         const { progress, message, ui } = delta.data;
                         console.log("delta ui", ui);
 
                         updateProgress(progress, message, ui);
                         break;
+                    }
 
-                    case "data-sceneResult":
+                    case "data-sceneResult": {
                         const { id, title, prompt, image, isComplete } = delta.data.scene;
                         if (isComplete && image) {
                             setSceneResult(image, prompt, title);
                         }
                         break;
+                    }
 
-                    case "data-sceneError":
+                    case "data-sceneError": {
                         const { message: errorMessage, code } = delta.data;
                         console.error('Scene generation error:', { message: errorMessage, code });
                         setError(errorMessage || 'An unknown error occurred');
                         break;
+                    }
 
                     default:
                         console.log('Unhandled delta type:', delta.type);

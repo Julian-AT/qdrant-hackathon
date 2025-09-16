@@ -7,7 +7,7 @@ import { updateSceneVisibility } from "@/app/(scene)/actions";
 import type { VisibilityType } from "@/components/visibility-selector";
 import {
   getSceneHistoryPaginationKey,
-  SceneHistory,
+  type SceneHistory,
 } from "@/components/sidebar-history";
 
 export function useSceneVisibility({

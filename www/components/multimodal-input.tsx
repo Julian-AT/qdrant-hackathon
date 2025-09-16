@@ -4,7 +4,6 @@ import type React from "react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
     Plus,
-    SlidersHorizontal,
     ArrowUp,
     X,
     FileText,
@@ -17,10 +16,8 @@ import {
     Loader2,
     AlertCircle,
     Copy,
-    UploadCloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -33,7 +30,6 @@ import { saveChatModelAsCookie } from '@/app/(scene)/actions';
 import { startTransition } from 'react';
 import { useScene } from '@/hooks/use-scene';
 import { toast } from 'sonner';
-import Image from "next/image";
 import { PreferencesPopover } from "./preferences-popover";
 
 // Types
@@ -146,7 +142,7 @@ const TypingPlaceholder: React.FC<{
 };
 
 // File type helpers
-const getFileIcon = (type: string) => {
+const _getFileIcon = (type: string) => {
     if (type.startsWith("image/"))
         return <ImageIcon className="h-5 w-5 text-zinc-400" />;
     if (type.startsWith("video/"))
@@ -164,7 +160,7 @@ const formatFileSize = (bytes: number): string => {
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return (
-        Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+        `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
     );
 };
 
@@ -176,7 +172,7 @@ const getFileTypeLabel = (type: string): string => {
         label = label.substring(0, label.indexOf("-"));
     }
     if (label.length > 10) {
-        label = label.substring(0, 10) + "...";
+        label = `${label.substring(0, 10)}...`;
     }
     return label;
 };
@@ -269,7 +265,7 @@ const readFileAsText = (file: File): Promise<string> => {
 // Helper function to get file extension for badge
 const getFileExtension = (filename: string): string => {
     const extension = filename.split(".").pop()?.toUpperCase() || "FILE";
-    return extension.length > 8 ? extension.substring(0, 8) + "..." : extension;
+    return extension.length > 8 ? `${extension.substring(0, 8)}...` : extension;
 };
 
 function PureMultimodalInput({
@@ -296,7 +292,7 @@ function PureMultimodalInput({
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const _intervalRef = useRef<NodeJS.Timeout | null>(null);
     const { setScene } = useScene();
 
     useEffect(() => {
@@ -310,7 +306,7 @@ function PureMultimodalInput({
                 maxHeight
             )}px`;
         }
-    }, [input]);
+    }, []);
 
     const handleTypingComplete = useCallback(() => {
         setIsTypingComplete(true);
@@ -487,7 +483,7 @@ function PureMultimodalInput({
                 pastedContent.length < 5
             ) {
                 e.preventDefault();
-                setInput(input + textData.slice(0, PASTE_THRESHOLD) + "...");
+                setInput(`${input + textData.slice(0, PASTE_THRESHOLD)}...`);
 
                 const pastedItem: PastedContent = {
                     id: Math.random().toString(),
@@ -569,7 +565,7 @@ function PureMultimodalInput({
         setFiles([]);
         setPastedContent([]);
         if (textareaRef.current) textareaRef.current.style.height = "auto";
-    }, [input, files, pastedContent, status, sendMessage, setAttachments, setInput, sceneId, setScene]);
+    }, [input, files, status, sendMessage, setAttachments, setInput, sceneId, setScene]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -816,7 +812,7 @@ const PastedContentCard: React.FC<{
     content: PastedContent;
     onRemove: (id: string) => void;
 }> = ({ content, onRemove }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, _setIsExpanded] = useState(false);
     const previewText = content.content.slice(0, 150);
     const needsTruncation = content.content.length > 150;
 
@@ -947,7 +943,7 @@ const TextualFilePreviewCard: React.FC<{
     file: FileWithPreview;
     onRemove: (id: string) => void;
 }> = ({ file, onRemove }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, _setIsExpanded] = useState(false);
     const previewText = file.textContent?.slice(0, 150) || "";
     const needsTruncation = (file.textContent?.length || 0) > 150;
     const fileExtension = getFileExtension(file.file.name);

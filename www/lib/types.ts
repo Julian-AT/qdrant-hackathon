@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { UIMessage } from "ai";
-import { ReactNode } from "react";
-import { SceneGenerationResult } from "./scene";
+import type { ReactNode } from "react";
+import type { SceneGenerationResult } from "./scene";
 
 export type DataPart = { type: "append-message"; message: string };
 

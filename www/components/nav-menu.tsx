@@ -2,7 +2,8 @@
 
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import React, { useRef, useState } from "react";
+import type React from "react";
+import { useRef, useState } from "react";
 
 interface NavItem {
   name: string;
@@ -26,10 +27,10 @@ const navs: NavItem[] = [
 
 export function NavMenu() {
   const ref = useRef<HTMLUListElement>(null);
-  const [left, setLeft] = useState(0);
-  const [width, setWidth] = useState(0);
-  const [isReady, setIsReady] = useState(false);
-  const [isManualScroll, setIsManualScroll] = useState(false);
+  const [left, _setLeft] = useState(0);
+  const [width, _setWidth] = useState(0);
+  const [isReady, _setIsReady] = useState(false);
+  const [_isManualScroll, setIsManualScroll] = useState(false);
   const pathname = usePathname();
 
   const handleClick = (

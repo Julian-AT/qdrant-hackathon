@@ -4,7 +4,7 @@ import { z } from "zod";
 import { myProvider } from "@/lib/ai/providers";
 import type { IkeaProduct } from "./types";
 import { IkeaIntegrationError } from "./types";
-import { SegmentationResult } from "./image-service";
+import type { SegmentationResult } from "./image-service";
 import { generateUUID } from "../utils";
 import Replicate from "replicate";
 import sharp from "sharp";

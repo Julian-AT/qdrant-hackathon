@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { QdrantClient } from "@qdrant/qdrant-js";
 
 const qdrant = new QdrantClient({
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const collection = searchParams.get("collection") || "furniture_images";
-    const limit = Math.min(parseInt(searchParams.get("limit") || "1000"), 1500);
+    const limit = Math.min(parseInt(searchParams.get("limit") || "1000", 10), 1500);
     const sample = searchParams.get("sample") === "true";
 
     if (!process.env.QDRANT_URL) {

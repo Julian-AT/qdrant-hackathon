@@ -8,10 +8,8 @@ import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
-  GetObjectCommand,
 } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import sharp from "sharp";
 
 interface ReplicateResult {
@@ -109,7 +107,7 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
 
   async generatePanorama(
     description: string,
-    options: Partial<ImageGenerationOptions> = {}, // eslint-disable-line @typescript-eslint/no-unused-vars
+    _options: Partial<ImageGenerationOptions> = {}, // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<{
     imageUrl: string;
     r2Url: string;
@@ -404,28 +402,6 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
     } catch (error) {
       throw new ImageGenerationError(
         "Failed to upload image to R2",
-        error as Error,
-      );
-    }
-  }
-
-  private async getSignedUrl(
-    key: string,
-    expiresIn: number = 86400,
-  ): Promise<string> {
-    try {
-      const command = new GetObjectCommand({
-        Bucket: this.bucketName,
-        Key: key,
-      });
-
-      const signedUrl = await getSignedUrl(this.s3Client, command, {
-        expiresIn,
-      });
-      return signedUrl;
-    } catch (error) {
-      throw new ImageGenerationError(
-        "Failed to generate signed URL",
         error as Error,
       );
     }

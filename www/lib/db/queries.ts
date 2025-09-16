@@ -28,6 +28,8 @@ import { generateUUID } from "@/lib/utils";
 import { generateHashedPassword } from "./utils";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { ChatSDKError } from "@/lib/errors";
+import { ModelMessage, ToolCallPart, ToolResultPart, UIMessagePart } from "ai";
+import { CustomUIDataTypes } from "../types";
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -94,7 +96,7 @@ export async function saveScene({
       title,
       visibility,
     });
-  } catch {
+  } catch (error) {
     console.log(error);
     throw new ChatSDKError("bad_request:database", "Failed to save scene");
   }
@@ -239,7 +241,7 @@ export async function getSceneById({ id }: { id: string }) {
       .from(scene)
       .where(eq(scene.id, id));
     return selectedScene;
-  } catch {
+  } catch (error) {
     console.log(error);
 
     throw new ChatSDKError("bad_request:database", "Failed to get scene by id");
@@ -360,7 +362,7 @@ function isValidImageData(imageData: unknown): boolean {
   return false;
 }
 
-function hasValidImage(parts: unknown[]): boolean {
+function hasValidImage(parts: UIMessagePart<CustomUIDataTypes, any>[]): boolean {
   if (!Array.isArray(parts) || parts.length === 0) {
     return false;
   }
@@ -370,8 +372,8 @@ function hasValidImage(parts: unknown[]): boolean {
     return false;
   }
 
-  if (firstPart.type === "data-sceneResult" && firstPart.data?.image) {
-    return isValidImageData(firstPart.data.image);
+  if (firstPart.type === "data-sceneResult" && firstPart.data?.scene.image) {
+    return isValidImageData(firstPart.data.scene.image);
   }
 
   if (firstPart.type === "file" && firstPart.url) {
@@ -454,9 +456,8 @@ export async function getPublicScenes({
     }
 
     return validScenes;
-  } catch {
+  } catch (error) {
     console.log(error);
-
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get public scenes",

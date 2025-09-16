@@ -1,7 +1,6 @@
 "use client"
 
 import { useTheme } from 'next-themes';
-import React from 'react'
 import GrainImage from "@/public/grain.png";
 import { usePathname } from 'next/navigation';
 

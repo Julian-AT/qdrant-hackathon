@@ -1,15 +1,13 @@
 "use client"
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Button } from './ui/button'
-import { PlusSignIcon, RefreshIcon, AlertCircleIcon, ArrowLeft01Icon, ArrowRight01Icon } from 'hugeicons-react'
-import { cn, fetcher } from '@/lib/utils'
+import { ArrowLeft01Icon, ArrowRight01Icon } from 'hugeicons-react'
+import { cn, } from '@/lib/utils'
 import Link from 'next/link'
-import { Scene } from '@/lib/db/schema'
-import { SceneResult } from '@/lib/types'
+import type { Scene } from '@/lib/db/schema'
 import { Skeleton } from './ui/skeleton'
 import { formatDistanceToNow } from 'date-fns'
-import CommunityScenes from './community-scenes'
 
 interface PersonalScenesProps {
     isMinified?: boolean
@@ -107,7 +105,7 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
         if (isMounted) {
             loadScenes(currentPage)
         }
-    }, [isMounted, currentPage])
+    }, [isMounted, currentPage, loadScenes])
 
     const loadMore = () => {
         if (!isLoading && hasMore) {
@@ -115,7 +113,7 @@ const PersonalScenes = ({ isMinified = false }: PersonalScenesProps) => {
         }
     }
 
-    const refresh = () => {
+    const _refresh = () => {
         setCurrentPage(0)
         setScenes([])
         setError(null)

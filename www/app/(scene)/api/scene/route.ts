@@ -18,7 +18,7 @@ import {
   SceneGenerationError,
   type SceneGenerationConfig,
 } from "@/lib/scene";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export const maxDuration = 60;
 

@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from "motion/react";
-import React, { useEffect, useRef } from "react";
+import type React from "react";
+import { useEffect, useRef } from "react";
 
 interface AnimatedGradientBackgroundProps {
     /** 
@@ -133,7 +134,7 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> = ({
         animationFrame = requestAnimationFrame(animateGradient);
 
         return () => cancelAnimationFrame(animationFrame); // Cleanup animation
-    }, [startingGap, Breathing, gradientColors, gradientStops, animationSpeed, breathingRange, topOffset]);
+    }, [startingGap, Breathing, gradientColors, gradientStops, animationSpeed, breathingRange]);
 
     return (
         <motion.div

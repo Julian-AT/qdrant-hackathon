@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useMemo, useEffect, useCallback, useState } from "react";
-// @ts-ignore
+import { useEffect, useCallback, useState } from "react";
+// @ts-expect-error
 import { Pannellum } from "pannellum-react";
-import { SceneHeader } from "./scene-header";
 import { useScene } from "@/hooks/use-scene";
 import { Conversation, ConversationContent } from "./conversation";
 import { useMessages } from "@/hooks/use-messages";
-import { UseChatHelpers } from "@ai-sdk/react";
-import { ChatMessage, IkeaFurniture, SceneResult } from "@/lib/types";
-import { Vote } from "@/lib/db/schema";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ChatMessage, } from "@/lib/types";
+import type { Vote } from "@/lib/db/schema";
 import { base64ToBlobUrl, cn, isValidBase64Image } from "@/lib/utils";
 import { GenerationProgress } from "./generation-progress";
 import { usePathname } from "next/navigation";
@@ -17,7 +16,7 @@ import { AlertCircleIcon, GithubIcon, Home12Icon } from "hugeicons-react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import SceneControlls from "./scene-controlls";
-import { IkeaProduct, SceneGenerationResult } from "@/lib/scene";
+import type { IkeaProduct, SceneGenerationResult } from "@/lib/scene";
 
 interface SceneProps {
   sceneId: string;
@@ -84,7 +83,7 @@ const Scene = ({
           const blobUrl = base64ToBlobUrl(latestSceneImage.scene.image);
           console.log(
             "Successfully converted base64 image to blob URL:",
-            blobUrl.substring(0, 50) + "..."
+            `${blobUrl.substring(0, 50)}...`
           );
           setImageUrl(blobUrl);
           return;
@@ -113,7 +112,7 @@ const Scene = ({
     console.log("Error Cleared");
   }, []);
 
-  const handleHotspotClick = useCallback((evt: any, args: any) => {
+  const _handleHotspotClick = useCallback((_evt: any, args: any) => {
     console.log(args.name);
   }, []);
 
