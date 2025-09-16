@@ -25,9 +25,12 @@ Built for the Qdrant Hackathon, the project demonstrates how visual vector searc
 
 <div align="center">
   <video width="80%" controls>
-    <source src="./assets/interiorly-showcase.mp4" type="video/mp4">
+    <source src="https://github.com/user-attachments/assets/5d7d4f53-08e0-43c7-ae1a-261d71401466" type="video/mp4">
   </video>
 </div>
+
+
+
 
 ## How It Works
 
