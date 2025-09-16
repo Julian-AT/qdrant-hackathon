@@ -110,7 +110,7 @@ export class IkeaService {
     ];
 
     const { object } = await generateObject({
-      model: myProvider.languageModel("chat-model-mistral"),
+      model: myProvider.languageModel("chat-model-openai"),
       schema: z.object({
         ids: z.array(
           z
