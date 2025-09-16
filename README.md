@@ -528,6 +528,19 @@ This streamlined flow highlights how Qdrant’s vector search, combined with adv
 - **Image Processing**: Sharp.js for segmentation and manipulation
 - **Data Pipeline**: Python scripts with Poetry for IKEA catalog processing
 
+## Qdrant Database(s)
+
+![Qdrant DB](./assets/qdrant.png)
+
+The application uses two separate Qdrant vector databases for different search capabilities:
+
+- **Text-based search**: Stores product descriptions and metadata as text embeddings for semantic search queries
+- **Reverse image search**: Stores product images as visual embeddings for finding similar furniture based on visual similarity
+
+This dual-database approach enables both natural language queries (e.g. "modern white sofa") and visual similarity matching when users upload reference images.
+
+For more information on the Qdrant database, scraping scripts etc., refer to the [Qdrant README](./qdrant/README.md).
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
