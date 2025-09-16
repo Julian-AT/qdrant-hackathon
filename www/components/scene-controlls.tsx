@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowDown01Icon, Share08Icon } from 'hugeicons-react'
+import { ArrowDown01Icon, CursorInfo01Icon, Location06Icon, LocationOffline01Icon, Share08Icon } from 'hugeicons-react'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import FurnitureSheet from './furniture-sheet'
@@ -15,21 +15,24 @@ import { useScene } from '@/hooks/use-scene'
 import { useSceneVisibility } from '@/hooks/use-chat-visibility'
 import { Session } from 'next-auth'
 import { Separator } from './ui/separator'
+import { FullscreenIcon } from 'lucide-react'
+import { Hotspot } from '@/lib/scene/types'
 
 interface SceneControllsProps {
   ikeaFurniture: IkeaProduct[]
   messages: ChatMessage[]
   session: Session
+  showHotspots: boolean
+  setShowHotspots: (showHotspots: boolean) => void
 }
 
-const SceneControlls = ({ ikeaFurniture, messages, session }: SceneControllsProps) => {
+const SceneControlls = ({ ikeaFurniture, messages, session, showHotspots, setShowHotspots }: SceneControllsProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { scene } = useScene()
   const { visibilityType } = useSceneVisibility({
     sceneId: scene.id,
     initialVisibilityType: 'public',
   })
-
 
   const sceneHistroy = useMemo(() => {
     return messages.flatMap(message =>
@@ -71,6 +74,20 @@ const SceneControlls = ({ ikeaFurniture, messages, session }: SceneControllsProp
               }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
+              <Button variant='ghost' size='sm' onClick={() => {
+                if (showHotspots) {
+                  setShowHotspots(false)
+                } else {
+                  setShowHotspots(true)
+                }
+              }}>
+                {showHotspots ? <LocationOffline01Icon className='size-4' /> : <Location06Icon className='size-4' />}
+                {showHotspots ? 'Hide Hotspots' : 'Show Hotspots'}
+              </Button>
+              <Button variant='ghost' size='sm'>
+                <FullscreenIcon className='size-4' />
+                Hide UI
+              </Button>
               <FurnitureSheet ikeaFurniture={ikeaFurniture} />
             </motion.div>
 
