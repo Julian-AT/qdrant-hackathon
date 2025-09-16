@@ -26,7 +26,7 @@ export async function generateTitleFromUserMessage({
     - generate a short, engaging room description that captures the essence of the user's message
     - keep it under 60 characters for optimal display
     - use descriptive adjectives that evoke atmosphere and style
-    - format as a flowing phrase like "cozy rustic kitchen" or "minimalist modern bedroom"
+    - format as a flowing phrase like "Cozy Rustic Kitchen" or "Minimalist Modern Bedroom"
     - focus on creating visual appeal and emotional connection
     - avoid generic terms, prefer specific and evocative language
     - do not use quotes, colons, or unnecessary punctuation`,
