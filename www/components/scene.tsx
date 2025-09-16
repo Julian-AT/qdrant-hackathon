@@ -72,7 +72,6 @@ const Scene = memo(({
 
   const processImage = useCallback(async (sceneResults: SceneGenerationResult[]) => {
     if (!sceneResults || sceneResults.length === 0) {
-      console.log("No scene image available");
       setImageUrl(null);
       return;
     }
@@ -89,7 +88,6 @@ const Scene = memo(({
       }
 
       if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
-        console.log("latestSceneImage.image", imageData);
         imageCache.set(imageData, imageData);
         setImageUrl(imageData);
         return;
@@ -152,17 +150,6 @@ const Scene = memo(({
   }
 
   if (!scene || scene.id === "init" && !imageUrl) return null;
-
-  console.log("Scene state:", {
-    id: scene.id,
-    progress: scene.progress,
-    hasImage: !!scene.image,
-    isLoading: scene.isLoading,
-    error: scene.error,
-    statusMessage: scene.statusMessage,
-  });
-
-  console.log("scene.ui", scene.ui);
 
   if (shouldShowLoading) {
     return (

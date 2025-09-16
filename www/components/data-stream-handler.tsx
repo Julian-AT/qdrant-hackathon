@@ -17,14 +17,10 @@ export function DataStreamHandler() {
         lastProcessedIndex.current = dataStream.length - 1;
 
         newDeltas.forEach((delta) => {
-            console.log('Data stream delta:', delta);
-
             try {
                 switch (delta.type) {
                     case "data-sceneProgress": {
                         const { progress, message, ui } = delta.data;
-                        console.log("delta ui", ui);
-
                         updateProgress(progress, message, ui);
                         break;
                     }

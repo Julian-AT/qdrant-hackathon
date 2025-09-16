@@ -15,8 +15,6 @@ interface FurnitureSheetProps {
 }
 
 const FurnitureSheet = ({ ikeaFurniture }: FurnitureSheetProps) => {
-    console.log(ikeaFurniture);
-
     const renderStars = (rating: number) => {
         const stars = []
         const fullStars = Math.floor(rating)
