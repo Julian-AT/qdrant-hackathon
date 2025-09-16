@@ -13,8 +13,6 @@ import { generateTitleFromUserMessage } from "@/app/(scene)/actions";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
 import { postRequestBodySchema, type PostRequestBody } from "./schema";
 import { ChatSDKError } from "@/lib/errors";
-import type { ChatMessage, SceneResult } from "@/lib/types";
-import type { VisibilityType } from "@/components/visibility-selector";
 import {
   SceneGenerator,
   SceneGenerationError,

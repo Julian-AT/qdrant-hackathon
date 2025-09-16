@@ -1,15 +1,13 @@
 import { QdrantClient } from "@qdrant/qdrant-js";
-import { generateObject, embedMany } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { generateObject } from "ai";
 import { z } from "zod";
 import { myProvider } from "@/lib/ai/providers";
-import type { FurnitureAnalysis, IkeaProduct } from "./types";
+import type { IkeaProduct } from "./types";
 import { IkeaIntegrationError } from "./types";
 import { SegmentationResult } from "./image-service";
 import { generateUUID } from "../utils";
 import Replicate from "replicate";
 import sharp from "sharp";
-import fs from "node:fs";
 
 interface Segment {
   id: string;
@@ -170,7 +168,7 @@ export class IkeaService {
               text: segment.label,
             },
           },
-        )) as any;
+        )) as { embedding: number[] };
 
         const embedding = output.embedding as number[];
         const ikeaProduct = await this.qdrant.search(this.collectionName, {

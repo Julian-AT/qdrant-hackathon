@@ -1,4 +1,5 @@
-import type { ChatMessage, IkeaFurniture, SceneResult } from "@/lib/types";
+import type { ChatMessage } from "@/lib/types";
+import Image from "next/image";
 import { ImageService } from "./image-service";
 import { IkeaService } from "./ikea-service";
 import type {
@@ -76,7 +77,7 @@ export class SceneGenerator {
           onProgress?.(
             45,
             "Detecting objects in the scene...",
-            <img
+            <Image
               src={segmentationResult.img as string}
               alt="Segmentation Result"
               width={100}
@@ -257,7 +258,6 @@ export class SceneGenerator {
       onProgress?.(100, "Scene generation complete!");
       steps.push("Scene generation completed successfully");
 
-      const processingTime = Date.now() - startTime;
 
       const scene: SceneResult = {
         id: sceneId,
@@ -282,7 +282,6 @@ export class SceneGenerator {
     } catch (error) {
       console.log(error);
 
-      const processingTime = Date.now() - startTime;
       steps.push(`Generation failed: ${(error as Error).message}`);
 
       throw new SceneGenerationError(

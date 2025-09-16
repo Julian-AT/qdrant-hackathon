@@ -71,11 +71,10 @@ export function NavMenu() {
         {navs.map((item) => (
           <li
             key={item.name}
-            className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-base transition-colors duration-200 ${
-              pathname === item.href
-                ? "text-primary"
-                : "text-primary/60 hover:text-primary"
-            } tracking-tight`}
+            className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-base transition-colors duration-200 ${pathname === item.href
+              ? "text-primary"
+              : "text-primary/60 hover:text-primary"
+              } tracking-tight`}
           >
             <a href={item.href} onClick={(e) => handleClick(e, item)}>
               {item.name}

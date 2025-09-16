@@ -59,17 +59,12 @@ export function GenerationProgress({
 
       // For progress > 10%, use weighted calculation
       const linearEstimate = (elapsedTime / progress) * 100;
-      const remainingTime = Math.min(
-        linearEstimate - elapsedTime,
-        baselineEstimate - elapsedTime,
-      );
+      const remainingTime = Math.min(linearEstimate - elapsedTime, baselineEstimate - elapsedTime);
 
       // Apply smoothing factor to prevent wild fluctuations
       const smoothedProgress = Math.max(progress, 15);
       const smoothingFactor = Math.min(0.7, smoothedProgress / 100);
-      const adjustedRemainingTime =
-        remainingTime * smoothingFactor +
-        (baselineEstimate - elapsedTime) * (1 - smoothingFactor);
+      const adjustedRemainingTime = remainingTime * smoothingFactor + (baselineEstimate - elapsedTime) * (1 - smoothingFactor);
 
       if (adjustedRemainingTime > 0) {
         const minutes = Math.floor(adjustedRemainingTime / 60000);

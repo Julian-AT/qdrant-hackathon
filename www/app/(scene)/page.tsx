@@ -2,13 +2,10 @@ import { cookies } from "next/headers";
 
 import { Chat } from "@/components/chat";
 import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
-import { generateFriendlyUUID, generateUUID } from "@/lib/utils";
+import { generateUUID } from "@/lib/utils";
 import { auth } from "../(auth)/auth";
 import { redirect } from "next/navigation";
 import { DataStreamHandler } from "@/components/data-stream-handler";
-import { friendlyWords } from "friendlier-words";
-import AnimatedGradientBackground from "@/components/animated-gradient-background";
-import CommunityScenes from "@/components/community-scenes";
 import NoiseBackground from "@/components/noise-background";
 
 export default async function Page() {

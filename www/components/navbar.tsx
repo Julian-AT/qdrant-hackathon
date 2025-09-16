@@ -67,7 +67,7 @@ export function Navbar() {
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
   const handleOverlayClick = () => setIsDrawerOpen(false);
 
-  if (pathname.startsWith("/scene/")) {
+  if (pathname.startsWith('/scene/')) {
     return null;
   }
 
@@ -76,7 +76,7 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 mx-4 flex justify-center transition-all md:mx-0 bg-transparent ",
         hasScrolled && "backdrop-blur-lg border-b border-white/[0.05]",
-        pathname.startsWith("/scene/") && "mb-0",
+        pathname.startsWith("/scene/") && "mb-0"
       )}
     >
       <div className="flex h-16 items-center p-4 container mx-auto justify-between">

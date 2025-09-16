@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { InferUITool, UIMessage } from "ai";
+import type { UIMessage } from "ai";
 import { ReactNode } from "react";
 import { SceneGenerationResult } from "./scene";
 

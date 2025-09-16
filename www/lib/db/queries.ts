@@ -10,9 +10,7 @@ import {
   gte,
   inArray,
   lt,
-  max,
   type SQL,
-  sql,
 } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -24,7 +22,6 @@ import {
   message,
   vote,
   type DBMessage,
-  type Scene,
   stream,
 } from "./schema";
 import { generateUUID } from "@/lib/utils";
@@ -43,7 +40,7 @@ const db = drizzle(client);
 export async function getUser(email: string): Promise<Array<User>> {
   try {
     return await db.select().from(user).where(eq(user.email, email));
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get user by email",
@@ -56,7 +53,7 @@ export async function createUser(email: string, password: string) {
 
   try {
     return await db.insert(user).values({ email, password: hashedPassword });
-  } catch (error) {
+  } catch {
     throw new ChatSDKError("bad_request:database", "Failed to create user");
   }
 }
@@ -70,7 +67,7 @@ export async function createGuestUser() {
       id: user.id,
       email: user.email,
     });
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to create guest user",
@@ -97,7 +94,7 @@ export async function saveScene({
       title,
       visibility,
     });
-  } catch (error) {
+  } catch {
     console.log(error);
     throw new ChatSDKError("bad_request:database", "Failed to save scene");
   }
@@ -114,7 +111,7 @@ export async function deleteSceneById({ id }: { id: string }) {
       .where(eq(scene.id, id))
       .returning();
     return scenesDeleted;
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to delete scene by id",
@@ -136,7 +133,7 @@ export async function getScenesByUserId({
   try {
     const extendedLimit = limit + 1;
 
-    const query = (whereCondition?: SQL<any>) =>
+    const query = (whereCondition?: SQL<unknown>) =>
       db
         .select({
           id: scene.id,
@@ -154,7 +151,13 @@ export async function getScenesByUserId({
         .orderBy(desc(scene.createdAt))
         .limit(extendedLimit);
 
-    let filteredScenes: any[] = [];
+    let filteredScenes: Array<{
+      id: string;
+      title: string;
+      visibility: VisibilityType;
+      createdAt: Date;
+      userId: string;
+    }> = [];
 
     if (startingAfter) {
       const [selectedScene] = await db
@@ -221,7 +224,7 @@ export async function getScenesByUserId({
       scenes: scenesWithLatestMessage,
       hasMore,
     };
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get scenes by user id",
@@ -236,7 +239,7 @@ export async function getSceneById({ id }: { id: string }) {
       .from(scene)
       .where(eq(scene.id, id));
     return selectedScene;
-  } catch (error) {
+  } catch {
     console.log(error);
 
     throw new ChatSDKError("bad_request:database", "Failed to get scene by id");
@@ -250,7 +253,7 @@ export async function saveMessages({
 }) {
   try {
     return await db.insert(message).values(messages);
-  } catch (error) {
+  } catch {
     throw new ChatSDKError("bad_request:database", "Failed to save messages");
   }
 }
@@ -262,7 +265,7 @@ export async function getMessagesBySceneId({ id }: { id: string }) {
       .from(message)
       .where(eq(message.sceneId, id))
       .orderBy(asc(message.createdAt));
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get messages by scene id",
@@ -296,7 +299,7 @@ export async function voteMessage({
       messageId,
       isUpvoted: type === "up",
     });
-  } catch (error) {
+  } catch {
     throw new ChatSDKError("bad_request:database", "Failed to vote message");
   }
 }
@@ -304,7 +307,7 @@ export async function voteMessage({
 export async function getVotesBySceneId({ id }: { id: string }) {
   try {
     return await db.select().from(vote).where(eq(vote.sceneId, id));
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get votes by scene id",
@@ -315,7 +318,7 @@ export async function getVotesBySceneId({ id }: { id: string }) {
 export async function getMessageById({ id }: { id: string }) {
   try {
     return await db.select().from(message).where(eq(message.id, id));
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get message by id",
@@ -323,7 +326,7 @@ export async function getMessageById({ id }: { id: string }) {
   }
 }
 
-function isValidImageData(imageData: any): boolean {
+function isValidImageData(imageData: unknown): boolean {
   if (!imageData || typeof imageData !== "string") {
     return false;
   }
@@ -357,7 +360,7 @@ function isValidImageData(imageData: any): boolean {
   return false;
 }
 
-function hasValidImage(parts: any[]): boolean {
+function hasValidImage(parts: unknown[]): boolean {
   if (!Array.isArray(parts) || parts.length === 0) {
     return false;
   }
@@ -388,7 +391,14 @@ export async function getPublicScenes({
   try {
     const offset = page * limit;
     const batchSize = limit * 3;
-    let validScenes: any[] = [];
+    const validScenes: Array<{
+      id: string;
+      title: string;
+      visibility: VisibilityType;
+      createdAt: Date;
+      userId: string;
+      latestMessagePart: unknown[];
+    }> = [];
     let currentOffset = offset;
 
     while (validScenes.length < limit) {
@@ -444,7 +454,7 @@ export async function getPublicScenes({
     }
 
     return validScenes;
-  } catch (error) {
+  } catch {
     console.log(error);
 
     throw new ChatSDKError(
@@ -484,7 +494,7 @@ export async function deleteMessagesBySceneIdAfterTimestamp({
           and(eq(message.sceneId, sceneId), inArray(message.id, messageIds)),
         );
     }
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to delete messages by scene id after timestamp",
@@ -504,7 +514,7 @@ export async function updateSceneVisiblityById({
       .update(scene)
       .set({ visibility })
       .where(eq(scene.id, sceneId));
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to update scene visibility by id",
@@ -538,7 +548,7 @@ export async function getMessageCountByUserId({
       .execute();
 
     return stats?.count ?? 0;
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get message count by user id",
@@ -557,7 +567,7 @@ export async function createStreamId({
     await db
       .insert(stream)
       .values({ id: streamId, sceneId, createdAt: new Date() });
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to create stream id",
@@ -575,7 +585,7 @@ export async function getStreamIdsBySceneId({ sceneId }: { sceneId: string }) {
       .execute();
 
     return streamIds.map(({ id }) => id);
-  } catch (error) {
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get stream ids by scene id",
@@ -595,7 +605,7 @@ export async function getAllScenes() {
       })
       .from(scene)
       .orderBy(desc(scene.createdAt));
-  } catch (error) {
+  } catch {
     throw new ChatSDKError("bad_request:database", "Failed to get all scenes");
   }
 }

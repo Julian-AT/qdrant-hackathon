@@ -109,7 +109,7 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
 
   async generatePanorama(
     description: string,
-    options: Partial<ImageGenerationOptions> = {},
+    options: Partial<ImageGenerationOptions> = {}, // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<{
     imageUrl: string;
     r2Url: string;
@@ -213,7 +213,7 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
             task_input: "Object Detection",
           },
         },
-      )) as any;
+      )) as { text: string };
 
       console.log(result);
 

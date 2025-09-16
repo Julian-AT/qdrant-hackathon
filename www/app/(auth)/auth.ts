@@ -40,7 +40,8 @@ export const {
   providers: [
     Credentials({
       credentials: {},
-      async authorize({ email, password }: any) {
+      async authorize(credentials) {
+        const { email, password } = credentials as { email: string; password: string };
         const users = await getUser(email);
 
         if (users.length === 0) {

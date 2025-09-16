@@ -9,7 +9,6 @@ import {
   primaryKey,
   boolean,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 
 export const scene = pgTable(
   "Scene",
