@@ -23,10 +23,13 @@ export async function generateTitleFromUserMessage({
   const { text: title } = await generateText({
     model: myProvider.languageModel("title-model"),
     system: `\n
-    - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 80 characters long
-    - the title should be a summary of the user's message
-    - do not use quotes or colons`,
+    - generate a short, engaging room description that captures the essence of the user's message
+    - keep it under 60 characters for optimal display
+    - use descriptive adjectives that evoke atmosphere and style
+    - format as a flowing phrase like "cozy rustic kitchen" or "minimalist modern bedroom"
+    - focus on creating visual appeal and emotional connection
+    - avoid generic terms, prefer specific and evocative language
+    - do not use quotes, colons, or unnecessary punctuation`,
     prompt: JSON.stringify(message),
   });
 

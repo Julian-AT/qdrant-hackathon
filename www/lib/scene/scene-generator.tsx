@@ -200,7 +200,7 @@ export class SceneGenerator {
 
           onProgress?.(
             85,
-            `Integrating ${ikeaProductsUsed} IKEA products into scene...`,
+            `Integrating ${ikeaProductsUsed.map((p) => p?.name).join(", ")} into scene...`,
           );
           finalImageUrl = await this.imageService.injectIkeaProducts(
             baseImageUrl,

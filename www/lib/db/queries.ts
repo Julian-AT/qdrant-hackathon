@@ -392,39 +392,23 @@ export async function getPublicScenes({
 }) {
   try {
     const offset = page * limit;
-    const batchSize = limit * 3;
-    const validScenes: Array<{
-      id: string;
-      title: string;
-      visibility: VisibilityType;
-      createdAt: Date;
-      userId: string;
-      latestMessagePart: unknown[];
-    }> = [];
-    let currentOffset = offset;
 
-    while (validScenes.length < limit) {
-      const scenes = await db
-        .select({
-          id: scene.id,
-          title: scene.title,
-          visibility: scene.visibility,
-          createdAt: scene.createdAt,
-          userId: scene.userId,
-        })
-        .from(scene)
-        .where(eq(scene.visibility, "public"))
-        .orderBy(desc(scene.createdAt))
-        .offset(currentOffset)
-        .limit(batchSize);
+    const scenes = await db
+      .select({
+        id: scene.id,
+        title: scene.title,
+        visibility: scene.visibility,
+        createdAt: scene.createdAt,
+        userId: scene.userId,
+      })
+      .from(scene)
+      .where(eq(scene.visibility, "public"))
+      .orderBy(desc(scene.createdAt))
+      .offset(offset)
+      .limit(limit);
 
-      if (scenes.length === 0) {
-        break;
-      }
-
-      for (const sceneData of scenes) {
-        if (validScenes.length >= limit) break;
-
+    const scenesWithMessages = await Promise.all(
+      scenes.map(async (sceneData) => {
         const [latestMessage] = await db
           .select({
             parts: message.parts,
@@ -434,28 +418,17 @@ export async function getPublicScenes({
           .orderBy(desc(message.createdAt))
           .limit(1);
 
-        if (
-          !latestMessage?.parts ||
-          !Array.isArray(latestMessage.parts) ||
-          !hasValidImage(latestMessage.parts)
-        ) {
-          continue;
-        }
-
-        validScenes.push({
+        return {
           ...sceneData,
-          latestMessagePart: latestMessage.parts,
-        });
-      }
+          latestMessagePart: latestMessage?.parts || [],
+        };
+      })
+    );
 
-      if (scenes.length < batchSize) {
-        break;
-      }
-
-      currentOffset += batchSize;
-    }
-
-    return validScenes;
+    return scenesWithMessages.filter((scene) =>
+      Array.isArray(scene.latestMessagePart) &&
+      hasValidImage(scene.latestMessagePart)
+    );
   } catch (error) {
     console.log(error);
     throw new ChatSDKError(

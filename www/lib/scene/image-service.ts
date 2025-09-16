@@ -76,7 +76,7 @@ export class ImageService {
   async generateRoomDescription(messages: ChatMessage[]): Promise<string> {
     try {
       const { text } = await generateText({
-        model: myProvider.languageModel("chat-model"),
+        model: myProvider.languageModel("chat-model-mistral"),
         system: `Create detailed room descriptions for 360° panoramic visualization.
 
 Include:

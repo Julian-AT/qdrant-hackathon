@@ -5,6 +5,7 @@ import Script from "next/script";
 import { DataStreamProvider } from "@/components/data-stream-provider";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import GradientBackground from "@/components/gradient-background";
 
 export const experimental_ppr = true;
 
@@ -28,6 +29,7 @@ export default async function Layout({
             <Navbar />
             {children}
             <Footer />
+            <GradientBackground />
           </SidebarInset>
         </SidebarProvider>
       </DataStreamProvider>

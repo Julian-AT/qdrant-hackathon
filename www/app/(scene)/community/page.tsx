@@ -1,9 +1,11 @@
-import CommunityScenes from "@/components/community-scenes";
+import UnifiedScenes from '@/components/unified-scenes'
 
-export default async function Page() {
+export default function CommunityPage() {
   return (
-    <div className="relative bg-background/70 mt-16">
-      <CommunityScenes />
+    <div className="min-h-screen bg-transparent z-10">
+      <div className="container mx-auto py-8">
+        <UnifiedScenes />
+      </div>
     </div>
-  );
+  )
 }

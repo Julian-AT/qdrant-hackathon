@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"@ai-sdk/mistral": "^2.0.14"
+	}
+}

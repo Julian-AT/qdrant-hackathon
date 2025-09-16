@@ -1,4 +1,4 @@
-export const DEFAULT_CHAT_MODEL: string = "chat-model";
+export const DEFAULT_CHAT_MODEL: string = "chat-model-mistral";
 
 export interface ChatModel {
   id: string;
@@ -9,13 +9,13 @@ export interface ChatModel {
 
 export const chatModels: Array<ChatModel> = [
   {
-    id: "chat-model",
-    name: "Mistral 7B",
-    description: "Latest model from Mistral",
+    id: "chat-model-mistral",
+    name: "Ministral 8B",
+    description: "Frontier model from Mistral",
     icon: "/mistral.webp",
   },
   {
-    id: "chat-model-reasoning",
+    id: "chat-model-openai",
     name: "GPT-5",
     description: "Latest model from OpenAI",
     icon: "/openai.png",

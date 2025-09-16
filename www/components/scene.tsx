@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useMemo, memo } from "react";
 // @ts-expect-error
 import { Pannellum } from "pannellum-react";
 import { useScene } from "@/hooks/use-scene";
@@ -29,7 +29,9 @@ interface SceneProps {
   isArtifactVisible: boolean;
 }
 
-const Scene = ({
+const imageCache = new Map<string, string>();
+
+const Scene = memo(({
   sceneId,
   status,
   votes,
@@ -55,50 +57,66 @@ const Scene = ({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [ikeaFurniture, setIkeaFurniture] = useState<IkeaProduct[]>([]);
 
-  const allMessageParts = messages.flatMap((message) => message.parts);
-  const sceneResults: SceneGenerationResult[] = allMessageParts
-    .filter((part) => part.type === "data-sceneResult")
-    .map((part) => part.data as SceneGenerationResult)
-    .sort((a, b) => new Date(b.scene.createdAt).getTime() - new Date(a.scene.createdAt).getTime());
+  const allMessageParts = useMemo(() =>
+    messages.flatMap((message) => message.parts),
+    [messages]
+  );
 
-  useEffect(() => {
-    const processImage = async () => {
-      if (!sceneResults || sceneResults.length === 0) {
-        console.log("No scene image available");
-        setImageUrl(null);
+  const sceneResults: SceneGenerationResult[] = useMemo(() =>
+    allMessageParts
+      .filter((part) => part.type === "data-sceneResult")
+      .map((part) => part.data as SceneGenerationResult)
+      .sort((a, b) => new Date(b.scene.createdAt).getTime() - new Date(a.scene.createdAt).getTime()),
+    [allMessageParts]
+  );
+
+  const processImage = useCallback(async (sceneResults: SceneGenerationResult[]) => {
+    if (!sceneResults || sceneResults.length === 0) {
+      console.log("No scene image available");
+      setImageUrl(null);
+      return;
+    }
+
+    try {
+      const latestSceneImage = sceneResults[0];
+      setIkeaFurniture(latestSceneImage.metadata.ikeaProductsUsed);
+
+      const imageData = latestSceneImage.scene.image;
+
+      if (imageCache.has(imageData)) {
+        setImageUrl(imageCache.get(imageData)!);
         return;
       }
 
-      try {
-        const latestSceneImage = sceneResults[0];
-        setIkeaFurniture(latestSceneImage.metadata.ikeaProductsUsed);
-
-        if (latestSceneImage.scene.image.startsWith('http://') || latestSceneImage.scene.image.startsWith('https://')) {
-          console.log("latestSceneImage.image", latestSceneImage.scene.image);
-          setImageUrl(latestSceneImage.scene.image);
-          return;
-        }
-
-        if (isValidBase64Image(latestSceneImage.scene.image)) {
-          const blobUrl = base64ToBlobUrl(latestSceneImage.scene.image);
-          console.log(
-            "Successfully converted base64 image to blob URL:",
-            `${blobUrl.substring(0, 50)}...`
-          );
-          setImageUrl(blobUrl);
-          return;
-        }
-
-        console.error("Invalid image format:", latestSceneImage.scene.image.substring(0, 50));
-        setImageUrl(null);
-      } catch (error) {
-        console.error("Error processing image:", error);
-        setImageUrl(null);
+      if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
+        console.log("latestSceneImage.image", imageData);
+        imageCache.set(imageData, imageData);
+        setImageUrl(imageData);
+        return;
       }
-    };
 
-    processImage();
-  }, [sceneResults]);
+      if (isValidBase64Image(imageData)) {
+        const blobUrl = base64ToBlobUrl(imageData);
+        console.log(
+          "Successfully converted base64 image to blob URL:",
+          `${blobUrl.substring(0, 50)}...`
+        );
+        imageCache.set(imageData, blobUrl);
+        setImageUrl(blobUrl);
+        return;
+      }
+
+      console.error("Invalid image format:", imageData.substring(0, 50));
+      setImageUrl(null);
+    } catch (error) {
+      console.error("Error processing image:", error);
+      setImageUrl(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    processImage(sceneResults);
+  }, [sceneResults, processImage]);
 
   const handlePanoramaLoad = useCallback(() => {
     console.log("panorama loaded");
@@ -116,10 +134,23 @@ const Scene = ({
     console.log(args.name);
   }, []);
 
-  if (typeof window === "undefined" || !pathname.startsWith("/scene/")) {
+  const shouldRenderScene = useMemo(() => {
+    return typeof window !== "undefined" && pathname.startsWith("/scene/");
+  }, [pathname]);
+
+  const shouldShowLoading = useMemo(() => {
+    return (scene.isLoading || scene.error) && !imageUrl;
+  }, [scene.isLoading, scene.error, imageUrl]);
+
+  const shouldShowNoImage = useMemo(() => {
+    return !imageUrl && !scene.isLoading;
+  }, [imageUrl, scene.isLoading]);
+
+  if (!shouldRenderScene) {
     console.log("window is undefined or pathname does not start with /scene/");
     return null;
   }
+
   if (!scene || scene.id === "init" && !imageUrl) return null;
 
   console.log("Scene state:", {
@@ -133,7 +164,7 @@ const Scene = ({
 
   console.log("scene.ui", scene.ui);
 
-  if ((scene.isLoading || scene.error) && !imageUrl) {
+  if (shouldShowLoading) {
     return (
       <div className="w-full h-full">
         <GenerationProgress
@@ -146,7 +177,7 @@ const Scene = ({
     );
   }
 
-  if (!imageUrl && !scene.isLoading) {
+  if (shouldShowNoImage) {
     return (
       <div className="flex items-center justify-center h-full z-10">
         <div className="text-center max-w-md">
@@ -217,6 +248,8 @@ const Scene = ({
       </Conversation>
     </div>
   );
-};
+});
+
+Scene.displayName = "Scene";
 
 export default Scene;

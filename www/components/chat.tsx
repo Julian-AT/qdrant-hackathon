@@ -22,8 +22,7 @@ import { MultimodalInput } from "./multimodal-input";
 import Scene from "@/components/scene";
 import { HeroPill } from "./hero-pill";
 import { Home01Icon } from "hugeicons-react";
-import CommunityScenes from "./community-scenes";
-import PersonalScenes from "./personal-scenes";
+import UnifiedScenes from "./unified-scenes";
 
 export function Chat({
   id,
@@ -182,17 +181,8 @@ export function Chat({
       </div>
       {messages.length === 0 && (
         <>
-          <div className="absolute inset-0 pointer-events-none max-h-dvh z-[1]">
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-64 translate-y-1/2 animate-fade-in-up">
-              <div className="w-[125rem] h-[125rem] rounded-full bg-gradient-to-t from-pink-500 to-sky-500/90 blur-[100px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-              <div className="w-[100rem] h-[100rem] rounded-full bg-gradient-to-t from-purple-600 to-orange-500/90 blur-[70px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-              <div className="w-[60rem] h-[60rem] rounded-full bg-gradient-to-t from-purple-700/40 to-pink-700 blur-[50px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-              <div className="w-[45rem] h-[45rem] rounded-full bg-gradient-to-t from-purple-800/50 to-orange-800/50 blur-[30px] absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"></div>
-            </div>
-          </div>
-          <div className="relative z-[3] p-3 flex flex-col gap-3">
-            <PersonalScenes isMinified />
-            <CommunityScenes isMinified />
+          <div className="relative z-[3] p-3">
+            <UnifiedScenes />
           </div>
         </>
       )}

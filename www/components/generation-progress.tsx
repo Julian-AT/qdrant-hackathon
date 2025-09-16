@@ -132,7 +132,7 @@ export function GenerationProgress({
         ) : (
           ui as ReactNode
         )} */}
-        <div className="absolute bottom-5 left-0 right-0 max-w-1/4 mx-auto">
+        <div className="absolute bottom-5 left-0 right-0 max-w-1/4 min-w-xs mx-auto">
           <Progress value={progress} />
           <p className="text-sm text-muted-foreground mt-2">
             ETA: {eta || "Calculating..."}
