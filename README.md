@@ -19,8 +19,7 @@
 
 ## Overview
 
-**Interiorly** showcases the power of Qdrant vector search by combining AI-generated interiors with real-world furniture matching.  
-Describe your ideal room in plain English, generate an interactive 360° panorama, and discover matching IKEA products you can actually buy.
+**Interiorly** showcases the power of Qdrant vector search by combining AI-generated interiors with real-world furniture matching. Describe your ideal room in plain English, generate an interactive 360° panorama, and discover matching IKEA products you can actually buy.
 
 Built for the Qdrant Hackathon, the project demonstrates how visual vector search can bridge AI-generated imagery and real shopping experiences.
 
@@ -31,7 +30,7 @@ Built for the Qdrant Hackathon, the project demonstrates how visual vector searc
 Interiorly turns a simple text prompt into an interactive, shoppable 360° room through a seamless pipeline:
 
 **1. Describe Your Space**  
-You start by describing your dream room in plain English. The system validates the input and uses Pixtral 12B (with optional GPT-5) to improve it for a detailed text-to-image model prompt.
+You start by describing your dream room in plain text. The system validates the input and uses Pixtral 12B (with optional GPT-5) to improve it for a detailed text-to-image model prompt.
 
 **2. Generate the Panorama**  
 The prompt gets turned into a high-resolution 360° equirectangular panorama, creating a photorealistic interior scene.
@@ -48,11 +47,20 @@ Florence-2-Large analyzes and segments the panorama, identifying and isolating i
 **4. Filter the Furniture**  
 The furniture is filtered using GPT-5 to narrow down the list of possible furniture items and remove items that are not available as IKEA products and get structured output with a list of items to proceed with.
 
+> [!IMPORTANT]  
+> This step uses GPT-5 since Mistral models had issues with structured output regarding exact id parsing and filtering.
+
 **5. Find Matching Products**  
-Each detected object (except filtered) is embedded with CLIP (clip-vit-large-patch14) and compared against the Qdrant vector database of IKEA products to locate visually similar items.
+Each detected object (except filtered) is embedded with CLIP ([clip-vit-large-patch14](https://huggingface.co/openai/clip-vit-large-patch14)) and compared against the Qdrant vector database of IKEA products to locate visually similar items.
 
 **67. Compose the Final Image**  
 SeedDream-4 replaces placeholder objects with real IKEA furniture while preserving the scene’s lighting and perspective.
+
+> [!NOTE]
+> Before using Seedream-4, this step used Nano Banana for the image editing. Both models come to similar results for this usecase. However, Seedream-4 is faster and cheaper to run thats why it is currently used.
+
+> [!WARNING]
+> This is the most unstable part of this project. [Seedream-4](https://replicate.com/bytedance/seedream-4) is not always able to inject the reference images from IKEA directly into the scene. This results in certain furniture items not being injected or not being injected correctly. It may also occur that the aspect ratio and or perspective is not preserved during this step.
 
 **7. Upscale the Image**  
 The image is upscaled using a model to improve the quality of the image.
@@ -509,11 +517,11 @@ This streamlined flow highlights how Qdrant’s vector search, combined with adv
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Pannellum.js (360° viewer)
 - **Backend**: Next.js API Routes, PostgreSQL with Drizzle ORM, Cloudflare R2 storage
 - **Authentication**: NextAuth.js with session management and rate limiting
-- **AI Models**: 
+- **AI Models (Mostly via Replicate)**: 
   - `govirtualuk/pegasus` for 360° panorama generation
   - `krthr/clip-embeddings` for visual similarity search
-  - Pixtral 12B for natural language processing
-  - OpenAI GPT-5 for natural language processing and structured output
+  - `Pixtral 12B` for natural language processing
+  - `OpenAI GPT-5` for natural language processing and structured output
   - Object detection models for furniture segmentation
 - **Vector Database**: Qdrant with 16,000+ IKEA product embeddings
 - **Real-time**: Server-Sent Events (SSE) for live progress updates
