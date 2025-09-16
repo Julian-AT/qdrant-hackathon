@@ -61,8 +61,6 @@ export function useScene() {
 
   const updateProgress = useCallback(
     (progress: number, statusMessage: string, ui?: ReactNode) => {
-      console.log("updateProgress", progress, statusMessage, ui);
-
       setScene((currentScene) => ({
         ...currentScene,
         progress,

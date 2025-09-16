@@ -180,8 +180,6 @@ export class IkeaService {
       });
 
       const ikeaProducts = await Promise.all(ikeaProductsPromises);
-      console.log(ikeaProducts);
-
       return ikeaProducts as unknown as IkeaProduct[];
     } catch (error) {
       console.log(error);

@@ -73,7 +73,6 @@ export class SceneGenerator {
           );
           const segmentationResult =
             await this.imageService.segmentImage(tempImageUrl);
-          console.log(segmentationResult);
           onProgress?.(
             45,
             "Detecting objects in the scene...",
@@ -211,10 +210,6 @@ export class SceneGenerator {
           if (ikeaProducts.length > 0) {
             steps.push(
               `Successfully integrated ${ikeaProductsUsed} IKEA products`,
-            );
-            console.log(
-              "IKEA products found:",
-              ikeaProducts.filter((p) => p !== null).map((p) => p?.name),
             );
           } else {
             steps.push("No suitable IKEA products found, using base image");

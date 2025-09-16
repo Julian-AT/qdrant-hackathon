@@ -213,8 +213,6 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
         },
       )) as { text: string };
 
-      console.log(result);
-
       if (!result.text) {
         throw new Error("No result text");
       }
