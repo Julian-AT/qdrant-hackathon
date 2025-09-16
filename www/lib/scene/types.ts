@@ -24,6 +24,7 @@ export interface SceneGenerationResult {
     steps: string[];
     furnitureItemsFound: number;
     ikeaProductsUsed: IkeaProduct[];
+    hotspots: Hotspot[];
   };
 }
 
@@ -80,4 +81,12 @@ export class ImageGenerationError extends Error {
     super(message);
     this.name = "ImageGenerationError";
   }
+}
+
+export interface Hotspot {
+  type: string;
+  pitch: number;
+  yaw: number;
+  text: string;
+  URL: string;
 }
