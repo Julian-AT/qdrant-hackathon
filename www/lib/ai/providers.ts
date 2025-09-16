@@ -22,7 +22,7 @@ export const myProvider = isTestEnvironment
   })
   : customProvider({
     languageModels: {
-      "chat-model-mistral": mistral("ministral-8b-latest"),
+      "chat-model-mistral": mistral("pixtral-12b-2409"),
       "chat-model-openai": openai("gpt-5"),
       "title-model": openai("gpt-4o-mini"),
       "artifact-model": openai("gpt-4o-mini"),

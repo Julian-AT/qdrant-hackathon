@@ -10,7 +10,7 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: "chat-model-mistral",
-    name: "Ministral 8B",
+    name: "Pixtral 12b",
     description: "Frontier model from Mistral",
     icon: "/mistral.webp",
   },
