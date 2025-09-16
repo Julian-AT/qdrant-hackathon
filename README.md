@@ -23,7 +23,11 @@
 
 Built for the Qdrant Hackathon, the project demonstrates how visual vector search can bridge AI-generated imagery and real shopping experiences.
 
-<video src="./assets/interiorly-showcase.mp4" controls preload></video>
+<div align="center">
+  <video width="80%" controls>
+    <source src="./assets/interiorly-showcase.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## How It Works
 
