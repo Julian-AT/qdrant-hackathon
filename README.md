@@ -62,440 +62,444 @@ This streamlined flow highlights how Qdrant’s vector search, combined with adv
 
 <details>
 <summary>Example Output Datastructure</summary>
+
 ```json
 [
-    {
-        "id": "2b7074cc-b532-4259-8a91-a4c8cfa0af55",
-        "sceneId": "f0d9774e-847f-42da-b398-4f5906ca9805",
-        "role": "assistant",
-        "parts": [
-            {
-                "type": "data-sceneResult",
-                "data": {
-                    "scene": {
-                        "id": "f0d9774e-847f-42da-b398-4f5906ca9805",
-                        "title": "Charming Vintage Living Room",
-                        "prompt": "### Living Room Description for 360° Panoramic Visualization\n\n#### Room Type and Function\nThe living room serves as the central hub of the home, designed for relaxation, socializing, and entertainment. It is an inviting space that reflects the homeowner's personality and lifestyle.\n\n#### Architectural Elements\n- **Walls:** The walls are adorned with a smooth, matte finish in a soft, neutral shade of \"Greige,\" which complements the overall color scheme. One wall features a built-in fireplace with a marble surround and a wooden mantel.\n- **Flooring:** The flooring consists of wide-plank, light-colored oak hardwood, adding warmth and texture to the room.\n- **Ceiling:** The ceiling is vaulted with exposed wooden beams, adding a touch of rustic elegance and height to the space.\n- **Windows:** Large, floor-to-ceiling windows on one side of the room allow ample natural light to flood in, offering a panoramic view of the lush, green backyard. The windows are framed with white, minimalist casements.\n- **Doors:** A double French door leads to the backyard, allowing easy access to the outdoor space. The doors are made of clear glass with a white frame, matching the window style.\n\n#### Lighting Setup\n- **Natural Lighting:** The room is bathed in natural light from the large windows, creating a bright and airy atmosphere. The light filters through sheer white curtains, adding a soft, diffused glow.\n- **Artificial Lighting:** Recessed lighting in the ceiling provides even, ambient illumination. Two floor lamps with fabric shades flank the seating area, offering warm, task lighting. A pendant light hangs above the coffee table, casting a gentle glow on the space below.\n\n#### Spatial Layout and Flow\nThe room is arranged in a U-shape around a central coffee table, creating a cozy conversation area. The layout encourages interaction and flow, making it ideal for both intimate gatherings and larger social events.\n\n#### Basic Furniture Placement\n- **Seating:** A large, L-shaped sectional sofa in a neutral, performance fabric faces the fireplace and television. Two armchairs in a complementary shade of blue fabric are positioned on either side of the coffee table, creating a balanced seating arrangement.\n- **Coffee Table:** A low, rectangular coffee table made of glass and metal sits in the center of the seating area, providing a surface for books, drinks, and decorative items.\n- **Entertainment:** A large, flat-screen television is mounted above the fireplace, with built-in shelving on either side for media storage and decorative accessories.\n- **Storage:** A media console beneath the television provides additional storage and display space. A sideboard against one wall offers additional storage and surface space for decorative items.\n\n#### Color Scheme and Materials\n- **Color Scheme:** The color scheme is a harmonious blend of neutral shades, including greige, white, and light wood, accented with pops of blue and green to bring in natural elements.\n- **Materials:** The materials used throughout the room include light-colored oak hardwood, marble, metal, and a mix of performance fabrics and natural textiles for the upholstery.\n\n#### Design Style and Atmosphere\n- **Design Style:** The living room embodies a modern, transitional design style, blending contemporary elements with classic, timeless pieces.\n- **Atmosphere:** The atmosphere is inviting, warm, and comfortable, creating a perfect balance between style and functionality. The space exudes a sense of tranquility and elegance, making it an ideal space for relaxation and socializing.\n\nThis detailed description provides a comprehensive overview of the living room, ensuring an accurate and immersive 360° panoramic visualization.",
-                        "image": "https://pub-40e0d558605948118bb2c2c19f0cfeaa.r2.dev/panoramas/1758048635604-ecc685b2-c5dd-46a2-86a1-ba26997ae4a0.png",
-                        "isComplete": true,
-                        "createdAt": "2025-09-16T18:50:38.067Z"
+  {
+    "id": "2b7074cc-b532-4259-8a91-a4c8cfa0af55",
+    "sceneId": "f0d9774e-847f-42da-b398-4f5906ca9805",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "data-sceneResult",
+        "data": {
+          "scene": {
+            "id": "f0d9774e-847f-42da-b398-4f5906ca9805",
+            "title": "Charming Vintage Living Room",
+            "prompt": "Charming living room with a fireplace, a sectional sofa, a coffee table, a TV, a sideboard, and a media console.",
+            "image": "https://pub-40e0d558605948118bb2c2c19f0cfeaa.r2.dev/panoramas/1758048635604-ecc685b2-c5dd-46a2-86a1-ba26997ae4a0.png",
+            "isComplete": true,
+            "createdAt": "2025-09-16T18:50:38.067Z"
+          },
+          "metadata": {
+            "processingTime": 128281,
+            "steps": [
+              "Started room description generation",
+              "Generated room description: ### Living Room Description for 360° Panoramic Visualization\n\n#### Room Type and Function\nThe living...",
+              "Started panoramic image generation",
+              "Generated base panoramic image",
+              "Started IKEA furniture integration",
+              "Detected 12 objects in the scene",
+              "Extracted 12 furniture segments",
+              "Filtered to 6 IKEA-compatible furniture items",
+              "Found 6 matching IKEA products",
+              "IKEA products integrated into scene",
+              "Successfully integrated [object Object],[object Object],[object Object],[object Object],[object Object],[object Object] IKEA products",
+              "Started image upscaling",
+              "Image upscaled successfully",
+              "Scene generation completed successfully"
+            ],
+            "furnitureItemsFound": 12,
+            "ikeaProductsUsed": [
+              {
+                "id": "53acc71a-390e-437d-8f4d-b2458469cb2f",
+                "version": 266,
+                "score": 0.83912605,
+                "payload": {
+                  "product_id": "90557886",
+                  "product_number": "90557886",
+                  "product_name": "GRÖNSTA",
+                  "category_name": "Outdoor",
+                  "subcategory_name": "Outdoor patio furniture",
+                  "description": "Armchair, in/outdoor, white",
+                  "price": 95,
+                  "currency": "USD",
+                  "url": "https://www.ikea.com/us/en/p/groensta-armchair-in-outdoor-white-90557886/",
+                  "main_image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-white__1243810_pe920959_s5.jpg",
+                  "main_image_alt": "GRÖNSTA Armchair, in/outdoor, white",
+                  "rating_info": {
+                    "rating": 4.7,
+                    "review_count": 99,
+                    "rating_percentage": 94
+                  },
+                  "quick_facts": [],
+                  "variants": [
+                    {
+                      "url": "https://www.ikea.com/us/en/p/groensta-armchair-in-outdoor-white-90557886/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-white__1243810_pe920959_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": true,
+                      "product_id": "groensta-armchair-in-outdoor-white-90557886"
                     },
-                    "metadata": {
-                        "processingTime": 128281,
-                        "steps": [
-                            "Started room description generation",
-                            "Generated room description: ### Living Room Description for 360° Panoramic Visualization\n\n#### Room Type and Function\nThe living...",
-                            "Started panoramic image generation",
-                            "Generated base panoramic image",
-                            "Started IKEA furniture integration",
-                            "Detected 12 objects in the scene",
-                            "Extracted 12 furniture segments",
-                            "Filtered to 6 IKEA-compatible furniture items",
-                            "Found 6 matching IKEA products",
-                            "IKEA products integrated into scene",
-                            "Successfully integrated [object Object],[object Object],[object Object],[object Object],[object Object],[object Object] IKEA products",
-                            "Started image upscaling",
-                            "Image upscaled successfully",
-                            "Scene generation completed successfully"
-                        ],
-                        "furnitureItemsFound": 12,
-                        "ikeaProductsUsed": [
-                            {
-                                "id": "53acc71a-390e-437d-8f4d-b2458469cb2f",
-                                "version": 266,
-                                "score": 0.83912605,
-                                "payload": {
-                                    "product_id": "90557886",
-                                    "product_number": "90557886",
-                                    "product_name": "GRÖNSTA",
-                                    "category_name": "Outdoor",
-                                    "subcategory_name": "Outdoor patio furniture",
-                                    "description": "Armchair, in/outdoor, white",
-                                    "price": 95,
-                                    "currency": "USD",
-                                    "url": "https://www.ikea.com/us/en/p/groensta-armchair-in-outdoor-white-90557886/",
-                                    "main_image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-white__1243810_pe920959_s5.jpg",
-                                    "main_image_alt": "GRÖNSTA Armchair, in/outdoor, white",
-                                    "rating_info": {
-                                        "rating": 4.7,
-                                        "review_count": 99,
-                                        "rating_percentage": 94
-                                    },
-                                    "quick_facts": [],
-                                    "variants": [
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/groensta-armchair-in-outdoor-white-90557886/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-white__1243810_pe920959_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": true,
-                                            "product_id": "groensta-armchair-in-outdoor-white-90557886"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/groensta-armchair-in-outdoor-gray-turquoise-20557875/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-gray-turquoise__1243805_pe920954_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "groensta-armchair-in-outdoor-gray-turquoise-20557875"
-                                        }
-                                    ],
-                                    "clip_image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-white__1243810_pe920959_s5.jpg"
-                                }
-                            },
-                            {
-                                "id": "5e262682-8cae-48ef-95f1-c8135414d12a",
-                                "version": 170,
-                                "score": 0.7135848,
-                                "payload": {
-                                    "product_id": "60453324",
-                                    "product_number": "60453324",
-                                    "product_name": "STENSUND",
-                                    "category_name": "Kitchen, appliances & supplies",
-                                    "subcategory_name": "SEKTION Cabinet shelves & drawers",
-                                    "description": "Glass door, beige, 15x30 \"",
-                                    "price": 72,
-                                    "currency": "USD",
-                                    "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-60453324/",
-                                    "main_image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944631_pe797369_s5.jpg",
-                                    "main_image_alt": "STENSUND Glass door, beige, 15x30 \"",
-                                    "rating_info": {
-                                        "rating": 5,
-                                        "review_count": 3,
-                                        "rating_percentage": 100
-                                    },
-                                    "quick_facts": [],
-                                    "variants": [
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-60453324/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944631_pe797369_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": true,
-                                            "product_id": "stensund-glass-door-beige-60453324"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-30453325/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944633_pe797370_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "stensund-glass-door-beige-30453325"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-90453327/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944635_pe797371_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "stensund-glass-door-beige-90453327"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-50453329/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944637_pe797372_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "stensund-glass-door-beige-50453329"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-60494145/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944629_pe797368_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "stensund-glass-door-beige-60494145"
-                                        }
-                                    ],
-                                    "clip_image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944631_pe797369_s5.jpg"
-                                }
-                            },
-                            {
-                                "id": "691670cc-77f7-4080-9492-961365327383",
-                                "version": 140,
-                                "score": 0.84446514,
-                                "payload": {
-                                    "product_id": "s49319214",
-                                    "product_number": "s49319214",
-                                    "product_name": "FINNALA",
-                                    "category_name": "Sofas & armchairs",
-                                    "subcategory_name": "Sofas & sectionals",
-                                    "description": "Sectional, 4-seat, with chaise/Gunnared beige",
-                                    "price": 1699,
-                                    "currency": "USD",
-                                    "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
-                                    "main_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg",
-                                    "main_image_alt": "FINNALA Sectional, 4-seat, with chaise/Gunnared beige",
-                                    "rating_info": {
-                                        "rating": 4,
-                                        "review_count": 6,
-                                        "rating_percentage": 80
-                                    },
-                                    "quick_facts": [
-                                        "Soft"
-                                    ],
-                                    "variants": [
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": true,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray__0570235_pe666180_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713"
-                                        }
-                                    ],
-                                    "clip_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg"
-                                }
-                            },
-                            {
-                                "id": "691670cc-77f7-4080-9492-961365327383",
-                                "version": 140,
-                                "score": 0.8463791,
-                                "payload": {
-                                    "product_id": "s49319214",
-                                    "product_number": "s49319214",
-                                    "product_name": "FINNALA",
-                                    "category_name": "Sofas & armchairs",
-                                    "subcategory_name": "Sofas & sectionals",
-                                    "description": "Sectional, 4-seat, with chaise/Gunnared beige",
-                                    "price": 1699,
-                                    "currency": "USD",
-                                    "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
-                                    "main_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg",
-                                    "main_image_alt": "FINNALA Sectional, 4-seat, with chaise/Gunnared beige",
-                                    "rating_info": {
-                                        "rating": 4,
-                                        "review_count": 6,
-                                        "rating_percentage": 80
-                                    },
-                                    "quick_facts": [
-                                        "Soft"
-                                    ],
-                                    "variants": [
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": true,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray__0570235_pe666180_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713"
-                                        }
-                                    ],
-                                    "clip_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg"
-                                }
-                            },
-                            {
-                                "id": "90c27d52-4419-49c9-8890-33ec5edbb7b9",
-                                "version": 267,
-                                "score": 0.7519865,
-                                "payload": {
-                                    "product_id": "20586552",
-                                    "product_number": "20586552",
-                                    "product_name": "STOCKHOLM 2025",
-                                    "category_name": "Tables & chairs",
-                                    "subcategory_name": "Tables",
-                                    "description": "Coffee table, oak veneer glass",
-                                    "price": 249,
-                                    "currency": "USD",
-                                    "url": "https://www.ikea.com/us/en/p/stockholm-2025-coffee-table-oak-veneer-glass-20586552/",
-                                    "main_image_url": "https://www.ikea.com/us/en/images/products/stockholm-2025-coffee-table-oak-veneer-glass__1362696_pe955296_s5.jpg",
-                                    "main_image_alt": "STOCKHOLM 2025 Coffee table, oak veneer glass",
-                                    "rating_info": {
-                                        "rating": 4.1,
-                                        "review_count": 15,
-                                        "rating_percentage": 82
-                                    },
-                                    "quick_facts": [],
-                                    "variants": [],
-                                    "clip_image_url": "https://www.ikea.com/us/en/images/products/stockholm-2025-coffee-table-oak-veneer-glass__1362696_pe955296_s5.jpg"
-                                }
-                            },
-                            {
-                                "id": "9e6a7428-5e87-48f4-bfa4-889425ddc26e",
-                                "version": 81,
-                                "score": 0.7906162,
-                                "payload": {
-                                    "product_id": "s19324995",
-                                    "product_number": "s19324995",
-                                    "product_name": "DOCKSTA",
-                                    "category_name": "Tables & chairs",
-                                    "subcategory_name": "Dining furniture",
-                                    "description": "Table, white/white, 40 1/2 \"",
-                                    "price": 279.99,
-                                    "currency": "USD",
-                                    "url": "https://www.ikea.com/us/en/p/docksta-table-white-white-s19324995/",
-                                    "main_image_url": "https://www.ikea.com/us/en/images/products/docksta-table-white-white__0803262_pe768820_s5.jpg",
-                                    "main_image_alt": "DOCKSTA Table, white/white, 40 1/2 \"",
-                                    "rating_info": {
-                                        "rating": 4.3,
-                                        "review_count": 450,
-                                        "rating_percentage": 86
-                                    },
-                                    "quick_facts": [],
-                                    "variants": [
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/docksta-table-white-white-s19324995/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/docksta-table-white-white__0803262_pe768820_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": true,
-                                            "product_id": "docksta-table-white-white-s19324995"
-                                        },
-                                        {
-                                            "url": "https://www.ikea.com/us/en/p/docksta-table-black-black-s99418848/",
-                                            "image_url": "https://www.ikea.com/us/en/images/products/docksta-table-black-black__1079719_pe857670_s5.jpg?f=xu",
-                                            "description": "",
-                                            "is_selected": false,
-                                            "product_id": "docksta-table-black-black-s99418848"
-                                        }
-                                    ],
-                                    "clip_image_url": "https://www.ikea.com/us/en/images/products/docksta-table-white-white__0803262_pe768820_s5.jpg"
-                                }
-                            }
-                        ],
-                        "hotspots": [
-                            {
-                                "type": "cabinetry",
-                                "pitch": -34.74000930786133,
-                                "yaw": -162.0000001490116,
-                                "text": "cabinetry",
-                                "URL": ""
-                            },
-                            {
-                                "type": "cabinetry",
-                                "pitch": -14.22000503540039,
-                                "yaw": -118.79999923706055,
-                                "text": "cabinetry",
-                                "URL": ""
-                            },
-                            {
-                                "type": "chair",
-                                "pitch": -28.26000213623047,
-                                "yaw": 38.160011291503906,
-                                "text": "chair",
-                                "URL": ""
-                            },
-                            {
-                                "type": "chair",
-                                "pitch": -14.400001525878906,
-                                "yaw": 125.10000610351562,
-                                "text": "chair",
-                                "URL": ""
-                            },
-                            {
-                                "type": "door",
-                                "pitch": -3.150005340576172,
-                                "yaw": 106.20000457763672,
-                                "text": "door",
-                                "URL": ""
-                            },
-                            {
-                                "type": "house",
-                                "pitch": 0.08999450504779816,
-                                "yaw": 0.0000036656856536865234,
-                                "text": "house",
-                                "URL": ""
-                            },
-                            {
-                                "type": "studio couch",
-                                "pitch": -33.66000747680664,
-                                "yaw": -7.199989318847656,
-                                "text": "studio couch",
-                                "URL": ""
-                            },
-                            {
-                                "type": "studio couch",
-                                "pitch": -14.22000503540039,
-                                "yaw": -32.57999801635742,
-                                "text": "studio couch",
-                                "URL": ""
-                            },
-                            {
-                                "type": "table",
-                                "pitch": -27.900005340576172,
-                                "yaw": -47.51999282836914,
-                                "text": "table",
-                                "URL": ""
-                            },
-                            {
-                                "type": "table",
-                                "pitch": -21.960006713867188,
-                                "yaw": 26.280006408691406,
-                                "text": "table",
-                                "URL": ""
-                            },
-                            {
-                                "type": "window",
-                                "pitch": 4.319997787475586,
-                                "yaw": 106.56000518798828,
-                                "text": "window",
-                                "URL": ""
-                            },
-                            {
-                                "type": "window",
-                                "pitch": 7.109994888305664,
-                                "yaw": -13.67999267578125,
-                                "text": "window",
-                                "URL": ""
-                            }
-                        ]
+                    {
+                      "url": "https://www.ikea.com/us/en/p/groensta-armchair-in-outdoor-gray-turquoise-20557875/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-gray-turquoise__1243805_pe920954_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "groensta-armchair-in-outdoor-gray-turquoise-20557875"
                     }
-                },
-                "transient": false
-            }
-        ],
-        "attachments": [],
-        "createdAt": "2025-09-16 18:50:38.069"
-    }
+                  ],
+                  "clip_image_url": "https://www.ikea.com/us/en/images/products/groensta-armchair-in-outdoor-white__1243810_pe920959_s5.jpg"
+                }
+              },
+              {
+                "id": "5e262682-8cae-48ef-95f1-c8135414d12a",
+                "version": 170,
+                "score": 0.7135848,
+                "payload": {
+                  "product_id": "60453324",
+                  "product_number": "60453324",
+                  "product_name": "STENSUND",
+                  "category_name": "Kitchen, appliances & supplies",
+                  "subcategory_name": "SEKTION Cabinet shelves & drawers",
+                  "description": "Glass door, beige, 15x30 \"",
+                  "price": 72,
+                  "currency": "USD",
+                  "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-60453324/",
+                  "main_image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944631_pe797369_s5.jpg",
+                  "main_image_alt": "STENSUND Glass door, beige, 15x30 \"",
+                  "rating_info": {
+                    "rating": 5,
+                    "review_count": 3,
+                    "rating_percentage": 100
+                  },
+                  "quick_facts": [],
+                  "variants": [
+                    {
+                      "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-60453324/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944631_pe797369_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": true,
+                      "product_id": "stensund-glass-door-beige-60453324"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-30453325/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944633_pe797370_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "stensund-glass-door-beige-30453325"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-90453327/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944635_pe797371_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "stensund-glass-door-beige-90453327"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-50453329/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944637_pe797372_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "stensund-glass-door-beige-50453329"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/stensund-glass-door-beige-60494145/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944629_pe797368_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "stensund-glass-door-beige-60494145"
+                    }
+                  ],
+                  "clip_image_url": "https://www.ikea.com/us/en/images/products/stensund-glass-door-beige__0944631_pe797369_s5.jpg"
+                }
+              },
+              {
+                "id": "691670cc-77f7-4080-9492-961365327383",
+                "version": 140,
+                "score": 0.84446514,
+                "payload": {
+                  "product_id": "s49319214",
+                  "product_number": "s49319214",
+                  "product_name": "FINNALA",
+                  "category_name": "Sofas & armchairs",
+                  "subcategory_name": "Sofas & sectionals",
+                  "description": "Sectional, 4-seat, with chaise/Gunnared beige",
+                  "price": 1699,
+                  "currency": "USD",
+                  "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
+                  "main_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg",
+                  "main_image_alt": "FINNALA Sectional, 4-seat, with chaise/Gunnared beige",
+                  "rating_info": {
+                    "rating": 4,
+                    "review_count": 6,
+                    "rating_percentage": 80
+                  },
+                  "quick_facts": [
+                    "Soft"
+                  ],
+                  "variants": [
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": true,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray__0570235_pe666180_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713"
+                    }
+                  ],
+                  "clip_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg"
+                }
+              },
+              {
+                "id": "691670cc-77f7-4080-9492-961365327383",
+                "version": 140,
+                "score": 0.8463791,
+                "payload": {
+                  "product_id": "s49319214",
+                  "product_number": "s49319214",
+                  "product_name": "FINNALA",
+                  "category_name": "Sofas & armchairs",
+                  "subcategory_name": "Sofas & sectionals",
+                  "description": "Sectional, 4-seat, with chaise/Gunnared beige",
+                  "price": 1699,
+                  "currency": "USD",
+                  "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
+                  "main_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg",
+                  "main_image_alt": "FINNALA Sectional, 4-seat, with chaise/Gunnared beige",
+                  "rating_info": {
+                    "rating": 4,
+                    "review_count": 6,
+                    "rating_percentage": 80
+                  },
+                  "quick_facts": [
+                    "Soft"
+                  ],
+                  "variants": [
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": true,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s49319214"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s99319216"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-beige-s99575715"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-medium-gray__0514365_pe639438_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-gunnared-medium-gray-s59575717"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-tallmyra-black-gray__0570235_pe666180_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "finnala-sectional-4-seat-with-chaise-tallmyra-black-gray-s49575713"
+                    }
+                  ],
+                  "clip_image_url": "https://www.ikea.com/us/en/images/products/finnala-sectional-4-seat-with-chaise-gunnared-beige__0514363_pe639433_s5.jpg"
+                }
+              },
+              {
+                "id": "90c27d52-4419-49c9-8890-33ec5edbb7b9",
+                "version": 267,
+                "score": 0.7519865,
+                "payload": {
+                  "product_id": "20586552",
+                  "product_number": "20586552",
+                  "product_name": "STOCKHOLM 2025",
+                  "category_name": "Tables & chairs",
+                  "subcategory_name": "Tables",
+                  "description": "Coffee table, oak veneer glass",
+                  "price": 249,
+                  "currency": "USD",
+                  "url": "https://www.ikea.com/us/en/p/stockholm-2025-coffee-table-oak-veneer-glass-20586552/",
+                  "main_image_url": "https://www.ikea.com/us/en/images/products/stockholm-2025-coffee-table-oak-veneer-glass__1362696_pe955296_s5.jpg",
+                  "main_image_alt": "STOCKHOLM 2025 Coffee table, oak veneer glass",
+                  "rating_info": {
+                    "rating": 4.1,
+                    "review_count": 15,
+                    "rating_percentage": 82
+                  },
+                  "quick_facts": [],
+                  "variants": [],
+                  "clip_image_url": "https://www.ikea.com/us/en/images/products/stockholm-2025-coffee-table-oak-veneer-glass__1362696_pe955296_s5.jpg"
+                }
+              },
+              {
+                "id": "9e6a7428-5e87-48f4-bfa4-889425ddc26e",
+                "version": 81,
+                "score": 0.7906162,
+                "payload": {
+                  "product_id": "s19324995",
+                  "product_number": "s19324995",
+                  "product_name": "DOCKSTA",
+                  "category_name": "Tables & chairs",
+                  "subcategory_name": "Dining furniture",
+                  "description": "Table, white/white, 40 1/2 \"",
+                  "price": 279.99,
+                  "currency": "USD",
+                  "url": "https://www.ikea.com/us/en/p/docksta-table-white-white-s19324995/",
+                  "main_image_url": "https://www.ikea.com/us/en/images/products/docksta-table-white-white__0803262_pe768820_s5.jpg",
+                  "main_image_alt": "DOCKSTA Table, white/white, 40 1/2 \"",
+                  "rating_info": {
+                    "rating": 4.3,
+                    "review_count": 450,
+                    "rating_percentage": 86
+                  },
+                  "quick_facts": [],
+                  "variants": [
+                    {
+                      "url": "https://www.ikea.com/us/en/p/docksta-table-white-white-s19324995/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/docksta-table-white-white__0803262_pe768820_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": true,
+                      "product_id": "docksta-table-white-white-s19324995"
+                    },
+                    {
+                      "url": "https://www.ikea.com/us/en/p/docksta-table-black-black-s99418848/",
+                      "image_url": "https://www.ikea.com/us/en/images/products/docksta-table-black-black__1079719_pe857670_s5.jpg?f=xu",
+                      "description": "",
+                      "is_selected": false,
+                      "product_id": "docksta-table-black-black-s99418848"
+                    }
+                  ],
+                  "clip_image_url": "https://www.ikea.com/us/en/images/products/docksta-table-white-white__0803262_pe768820_s5.jpg"
+                }
+              }
+            ],
+            "hotspots": [
+              {
+                "type": "cabinetry",
+                "pitch": -34.74000930786133,
+                "yaw": -162.0000001490116,
+                "text": "cabinetry",
+                "URL": ""
+              },
+              {
+                "type": "cabinetry",
+                "pitch": -14.22000503540039,
+                "yaw": -118.79999923706055,
+                "text": "cabinetry",
+                "URL": ""
+              },
+              {
+                "type": "chair",
+                "pitch": -28.26000213623047,
+                "yaw": 38.160011291503906,
+                "text": "chair",
+                "URL": ""
+              },
+              {
+                "type": "chair",
+                "pitch": -14.400001525878906,
+                "yaw": 125.10000610351562,
+                "text": "chair",
+                "URL": ""
+              },
+              {
+                "type": "door",
+                "pitch": -3.150005340576172,
+                "yaw": 106.20000457763672,
+                "text": "door",
+                "URL": ""
+              },
+              {
+                "type": "house",
+                "pitch": 0.08999450504779816,
+                "yaw": 0.0000036656856536865234,
+                "text": "house",
+                "URL": ""
+              },
+              {
+                "type": "studio couch",
+                "pitch": -33.66000747680664,
+                "yaw": -7.199989318847656,
+                "text": "studio couch",
+                "URL": ""
+              },
+              {
+                "type": "studio couch",
+                "pitch": -14.22000503540039,
+                "yaw": -32.57999801635742,
+                "text": "studio couch",
+                "URL": ""
+              },
+              {
+                "type": "table",
+                "pitch": -27.900005340576172,
+                "yaw": -47.51999282836914,
+                "text": "table",
+                "URL": ""
+              },
+              {
+                "type": "table",
+                "pitch": -21.960006713867188,
+                "yaw": 26.280006408691406,
+                "text": "table",
+                "URL": ""
+              },
+              {
+                "type": "window",
+                "pitch": 4.319997787475586,
+                "yaw": 106.56000518798828,
+                "text": "window",
+                "URL": ""
+              },
+              {
+                "type": "window",
+                "pitch": 7.109994888305664,
+                "yaw": -13.67999267578125,
+                "text": "window",
+                "URL": ""
+              }
+            ]
+          }
+        },
+        "transient": false
+      }
+    ],
+    "attachments": [],
+    "createdAt": "2025-09-16 18:50:38.069"
+  }
 ]
 ```	
+
 </details>
+
+
 ![Pipeline Diagram](./assets/architecture.png)
 
 ## Technology Stack
