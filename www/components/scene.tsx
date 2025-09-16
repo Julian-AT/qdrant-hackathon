@@ -140,8 +140,8 @@ const Scene = memo(({
   }, [pathname]);
 
   const shouldShowLoading = useMemo(() => {
-    return (scene.isLoading || scene.error) && !imageUrl;
-  }, [scene.isLoading, scene.error, imageUrl]);
+    return (scene.isLoading || scene.error || scene.isLoading) && !imageUrl;
+  }, [scene.isLoading, scene.error, scene.isLoading, imageUrl]);
 
   const shouldShowNoImage = useMemo(() => {
     return !imageUrl && !scene.isLoading;
@@ -154,7 +154,7 @@ const Scene = memo(({
 
   if (!scene || scene.id === "init" && !imageUrl) return null;
 
-  if (shouldShowLoading) {
+  if (shouldShowLoading || scene.isLoading) {
     return (
       <div className="w-full h-full">
         <GenerationProgress
