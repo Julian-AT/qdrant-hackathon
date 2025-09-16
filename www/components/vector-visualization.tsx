@@ -60,7 +60,6 @@ const InteractiveParticleSystem: React.FC<{
 
         // Debug: Log categories
         const categories = [...new Set(points.map(p => p.payload?.name || 'unknown'))];
-        console.log('Categories found:', categories);
 
         points.forEach((point, i) => {
             const i3 = i * 3;
