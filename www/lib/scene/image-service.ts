@@ -77,18 +77,7 @@ export class ImageService {
     try {
       const { text } = await generateText({
         model: myProvider.languageModel("chat-model-mistral"),
-        system: `Create detailed room descriptions for 360° panoramic visualization.
-
-Include:
-- Room type and function
-- Architectural elements (walls, flooring, ceiling, windows, doors)
-- Lighting setup (natural and artificial)
-- Spatial layout and flow
-- Basic furniture placement
-- Color scheme and materials
-- Design style and atmosphere
-
-Be specific for accurate visualization, focus on 360° view elements, use professional terminology.`,
+        system: `Enhance the given room prompt while preserving all user-specified details. Improve phrasing and add necessary context for 360° panoramic visualization. Maintain the user's original vision but expand with spatial awareness, lighting considerations, and viewing angle details needed for seamless panoramic rendering.`,
         messages: convertToModelMessages(messages),
       });
 
@@ -257,15 +246,29 @@ Be specific for accurate visualization, focus on 360° view elements, use profes
       const baseImageResponse = await fetch(baseImageUrl);
       const baseImageBuffer = await baseImageResponse.arrayBuffer();
 
-      const result = (await this.replicate.run("google/nano-banana", {
+      const validIkeaProducts = ikeaProducts
+        .filter((product) => product.imageUrl && this.isValidImage(product.imageUrl))
+        .slice(0, 9);
+
+      const imageInputs: Buffer[] = [Buffer.from(baseImageBuffer)];
+
+      for (const product of validIkeaProducts) {
+        const productImageResponse = await fetch(product.imageUrl);
+        const productImageBuffer = await productImageResponse.arrayBuffer();
+        imageInputs.push(Buffer.from(productImageBuffer));
+      }
+
+      const result = (await this.replicate.run("bytedance/seedream-4", {
         input: {
+          size: "custom",
+          width: 2048,
+          height: 1024,
           prompt:
             "Inject the ikea products into the fully furnished panorama image. Make the scene natural. ",
-          image_input: [
-            Buffer.from(baseImageBuffer),
-            ...ikeaProducts.map((product) => product.imageUrl),
-          ],
-          output_format: "jpg",
+          max_images: 1,
+          image_input: imageInputs,
+          aspect_ratio: "16:9",
+          sequential_image_generation: "disabled"
         },
       })) as unknown as ReplicateResult[];
 
