@@ -204,8 +204,6 @@ const UnifiedScenes = ({ isMinified = false }: UnifiedScenesProps) => {
     }, [personalScenes])
 
     const validCommunityScenes = useMemo(() => {
-        console.log(communityScenes);
-
         return communityScenes
             .filter(scene =>
                 scene.latestMessagePart &&
