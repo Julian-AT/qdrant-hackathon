@@ -20,7 +20,7 @@ import {
 } from "@/lib/scene";
 import type { ReactNode } from "react";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
@@ -142,13 +142,6 @@ export async function POST(request: Request) {
               type: "data-sceneResult",
               data: result,
               transient: false,
-            });
-
-            console.log(`Scene generation completed for ${scene.id}:`, {
-              processingTime: result.metadata.processingTime,
-              furnitureItems: result.metadata.furnitureItemsFound,
-              ikeaProducts: result.metadata.ikeaProductsUsed,
-              steps: result.metadata.steps.length,
             });
 
             return;
