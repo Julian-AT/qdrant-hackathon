@@ -13,7 +13,7 @@ const NoiseBackground = () => {
     return null;
   }
 
-  if (theme === "dark") {
+  if (theme !== "light") {
     return (
       <div
         className="absolute inset-0 w-full h-full opacity-50 pointer-events-none z-[2]"
