@@ -39,7 +39,7 @@ const PersonalScenesSkeleton = memo(({ isMinified }: { isMinified: boolean }) =>
     </div>
 ))
 
-const FastImagePreview = memo(({
+export const FastImagePreview = memo(({
     base64Image,
     alt,
     className

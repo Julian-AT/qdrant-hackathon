@@ -36,9 +36,9 @@ const FurnitureSheet = ({ ikeaFurniture }: FurnitureSheetProps) => {
     return (
         <Sheet>
             <SheetTrigger>
-                <Button variant='secondary'>
+                <Button variant='ghost' className='cursor-pointer'>
                     <Home12Icon className='size-4' />
-                    IKEA Furniture
+                    Furniture
                 </Button>
             </SheetTrigger>
             <SheetContent className="sm:max-w-md">

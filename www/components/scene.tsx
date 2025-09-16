@@ -17,6 +17,7 @@ import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import SceneControlls from "./scene-controlls";
 import type { IkeaProduct, SceneGenerationResult } from "@/lib/scene";
+import { Session } from "next-auth";
 
 interface SceneProps {
   sceneId: string;
@@ -27,6 +28,7 @@ interface SceneProps {
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   isReadonly: boolean;
   isArtifactVisible: boolean;
+  session: Session;
 }
 
 const imageCache = new Map<string, string>();
@@ -40,6 +42,7 @@ const Scene = memo(({
   regenerate,
   isReadonly,
   isArtifactVisible,
+  session,
 }: SceneProps) => {
   const {
     containerRef: messagesContainerRef,
@@ -205,7 +208,7 @@ const Scene = memo(({
       ref={messagesContainerRef}
       className="overflow-hidden absolute w-screen h-screen"
     >
-      <SceneControlls ikeaFurniture={ikeaFurniture} />
+      <SceneControlls ikeaFurniture={ikeaFurniture} messages={messages} session={session} />
       <Conversation className="flex flex-col w-full h-full relative">
         <ConversationContent className="flex flex-col w-full h-full p-0">
           <Pannellum

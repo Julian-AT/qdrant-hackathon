@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import type React from "react";
 import { useRef, useState } from "react";
 
@@ -30,38 +31,7 @@ export function NavMenu() {
   const [left, _setLeft] = useState(0);
   const [width, _setWidth] = useState(0);
   const [isReady, _setIsReady] = useState(false);
-  const [_isManualScroll, setIsManualScroll] = useState(false);
   const pathname = usePathname();
-
-  const handleClick = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    item: NavItem,
-  ) => {
-    e.preventDefault();
-
-    const targetId = item.href.substring(1);
-    const element = document.getElementById(targetId);
-
-    if (element) {
-      // Set manual scroll flag
-      setIsManualScroll(true);
-
-      // Calculate exact scroll position
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - 100; // 100px offset
-
-      // Smooth scroll to exact position
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-
-      // Reset manual scroll flag after animation completes
-      setTimeout(() => {
-        setIsManualScroll(false);
-      }, 500); // Adjust timing to match scroll animation duration
-    }
-  };
 
   return (
     <div className="w-full hidden md:block">
@@ -69,19 +39,30 @@ export function NavMenu() {
         className="relative mx-auto flex w-fit rounded-full h-11 px-2 items-center justify-center"
         ref={ref}
       >
-        {navs.map((item) => (
-          <li
-            key={item.name}
-            className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-base transition-colors duration-200 ${pathname === item.href
-              ? "text-primary"
-              : "text-primary/60 hover:text-primary"
-              } tracking-tight`}
-          >
-            <a href={item.href} onClick={(e) => handleClick(e, item)}>
-              {item.name}
-            </a>
-          </li>
-        ))}
+        {navs.map((item) => {
+          const isExternal = item.href.startsWith('http');
+          const isActive = pathname === item.href;
+
+          return (
+            <li
+              key={item.name}
+              className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-base transition-colors duration-200 ${isActive
+                ? "text-primary"
+                : "text-primary/60 hover:text-primary"
+                } tracking-tight`}
+            >
+              {isExternal ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer">
+                  {item.name}
+                </a>
+              ) : (
+                <Link href={item.href}>
+                  {item.name}
+                </Link>
+              )}
+            </li>
+          );
+        })}
         {isReady && (
           <motion.li
             animate={{ left, width }}

@@ -28,13 +28,13 @@ const visibilities: Array<{
         {
             id: 'private',
             label: 'Private',
-            description: 'Only you can access this chat',
+            description: 'Only you can access this Scene',
             icon: <LockIcon />,
         },
         {
             id: 'public',
             label: 'Public',
-            description: 'Anyone with the link can access this chat',
+            description: 'Anyone with the link can access this Scene',
             icon: <GlobeIcon />,
         },
     ];
@@ -70,7 +70,7 @@ export function VisibilitySelector({
             >
                 <Button
                     data-testid="visibility-selector"
-                    variant="outline"
+                    variant="ghost"
                     className="hidden md:flex md:px-2 md:h-[34px]"
                 >
                     {selectedVisibility?.icon}

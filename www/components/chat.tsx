@@ -135,6 +135,7 @@ export function Chat({
           regenerate={regenerate}
           isReadonly={isReadonly}
           isArtifactVisible={false}
+          session={session}
         />
       )}
 
