@@ -8,8 +8,8 @@
   </a>
   <h1>Interiorly</h1>
   <p>Generate your dream home with natural language. Powered by Qdrant.</p>
-<a href="#"><img alt="Website" src="https://img.shields.io/badge/Website-Interiorly-purple?style=for-the-badge&labelColor=000000&logo=nextdotjs"></a>
-<a href="#"><img alt="AI Model" src="https://img.shields.io/badge/Huggingface-Interiorly%20Panorama-yellow?style=for-the-badge&labelColor=000000&logo=huggingface"></a>
+<a href="https://interiorly.julianschmidt.cv/"><img alt="Website" src="https://img.shields.io/badge/Website-Interiorly-purple?style=for-the-badge&labelColor=000000&logo=nextdotjs"></a>
+<a href="https://huggingface.co/JulianAT"><img alt="AI Model" src="https://img.shields.io/badge/Huggingface-Interiorly%20Panorama-yellow?style=for-the-badge&labelColor=000000&logo=huggingface"></a>
 <a href="#license"><img alt="License" src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge&labelColor=000000&logo=github"></a>
 </div>
 
