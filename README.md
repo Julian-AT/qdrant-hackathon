@@ -57,7 +57,7 @@ The furniture is filtered using GPT-5 to narrow down the list of possible furnit
 **5. Find Matching Products**  
 Each detected object (except filtered) is embedded with CLIP ([clip-vit-large-patch14](https://huggingface.co/openai/clip-vit-large-patch14)) and compared against the Qdrant vector database of IKEA products to locate visually similar items.
 
-**67. Compose the Final Image**  
+**6. Compose the Final Image**  
 SeedDream-4 replaces placeholder objects with real IKEA furniture while preserving the scene’s lighting and perspective.
 
 > [!NOTE]
